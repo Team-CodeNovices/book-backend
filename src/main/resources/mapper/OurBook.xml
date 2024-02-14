@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.book.dao.OurBookMapper">
+    <insert id="insert" parameterType="java.util.List">
+        INSERT INTO OurBook (bookname, author, publisher, genre, bookdetail , price, writedate) VALUES
+        <foreach collection="list" item="item" separator="," >
+            (
+            #{item.bookname},
+            #{item.author},
+            #{item.publisher},
+            #{item.genre},
+            #{item.bookdetail},
+            #{item.price},
+            #{item.writedate}
+            )
+        </foreach>
+    </insert>
+
+    <select id="select" resultType="OurBookDto">
+        select * from ourBook
+    </select>
+
+
+
+
+</mapper>

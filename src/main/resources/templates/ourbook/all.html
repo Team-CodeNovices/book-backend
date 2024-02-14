@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>전체</title>
+</head>
+<body>
+<div>
+    <table class= "table">
+        <tr>
+            <th>책이름</th>
+        </tr>
+        <tr th:each="dto : ${list} ">
+            <td th:text="${dto.bookname}"></td>
+        </tr>
+    </table>
+    <a th:href="@{/}">홈으로</a>
+</div>
+</body>
+</html>

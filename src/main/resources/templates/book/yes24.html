@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div>
+    <table class= "table">
+        <tr>
+            <th>순위</th>
+            <th>책이름</th>
+            <th>저자</th>
+            <th>출판사</th>
+            <th>출판일</th>
+        </tr>
+        <tr th:each="dto : ${list} ">
+            <td th:text="${dto.ranking}"></td>
+            <td th:text="${dto.bookname}"></td>
+            <td th:text="${dto.author}"></td>
+            <td th:text="${dto.publisher}"></td>
+            <td th:text="${dto.writedate}"></td>
+        </tr>
+    </table>
+    <a th:href="@{/}">홈으로</a>
+</div>
+</body>
+</html>
