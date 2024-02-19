@@ -1,6 +1,7 @@
 package com.example.book.service;
 
 import com.example.book.dao.OurBookMapper;
+import com.example.book.dto.AladinDto;
 import com.example.book.dto.OurBookDto;
 import com.example.book.dto.Yes24Dto;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,80 @@ import java.util.concurrent.CompletableFuture;
 public class RankingWorker {
 
     private final OurBookMapper dao;
+    @Async
+    public void getAladinAnother() throws IOException {
+        List<AladinDto> list = getAladinData(1, 20);
+        insertAladinData(list);
+    }
+
+    public static List<AladinDto> getAladinData(int startP, int stopP) throws IOException {
+        String baseUrl = "https://www.aladin.co.kr/";
+        List<AladinDto> list = new ArrayList<>();
+        int ranking = 1;
+        int totalpage = stopP; // 999위까지 페이지 갯수
+        for (int page = startP; page <= totalpage; page++) {
+            String pageUrl = baseUrl + "/shop/common/wbest.aspx?BestType=Bestseller&BranchType=1&CID=0&cnt=1000&SortOrder=1&page=" + page;
+            Document doc = Jsoup.connect(pageUrl).get();
+
+            Elements bookBoxes = doc.select(".ss_book_box");
+            for (Element bookBox : bookBoxes) {
+//                String itemid = bookBox.attr("itemid"); // itemid 추출
+                String bookTitle = bookBox.select(".bo3").text(); // 책 이름 추출
+                String price = bookBox.select(".ss_p2").text(); // 가격 추출
+
+                // 작가, 출판사, 출판일자 정보가 포함된 요소를 찾습니다.
+                // 이 정보는 페이지의 구조에 따라 다를 수 있으므로, 예제에서는 간단화를 위해 직접적인 선택자를 사용합니다.
+                // 실제 구조에 맞게 선택자를 조정해야 할 수 있습니다.
+                Element infoElement = bookBox.selectFirst(".bo3").parent().nextElementSibling(); // 가정: 작가 및 출판사 정보가 bo3의 부모 요소의 다음 형제 요소에 위치
+                String authorAndPublisher = infoElement.text(); // 작가 및 출판사 정보 추출
+
+                // 작가 및 출판사 정보 분리 (실제 페이지 구조에 따라 다를 수 있음)
+                String[] parts = authorAndPublisher.split("\\|"); // "|"를 구분자로 사용하여 분리
+                String author = parts.length > 0 ? parts[0].trim() : ""; // 첫 번째 부분을 작가 정보로 사용
+                String publisher = parts.length > 1 ? parts[1].trim() : ""; // 두 번째 부분을 출판사 정보로 사용
+                String publishDate = parts.length > 2 ? parts[2].trim() : ""; // 세 번째 부분을 출판일자로 사용
+                //log.info("rank-list : " + bookTitle + price + author + publisher + publishDate);
+
+                AladinDto dto = new AladinDto(
+                        ranking,
+                        bookTitle,
+                        author,
+                        publisher,
+                        price,
+                        publishDate
+                );
+                list.add(dto);
+                ranking++;
+            }
+        }
+        return list;
+    }
+    public void insertAladinData(List<AladinDto> list1) throws IOException {
+        List<OurBookDto> existBooks = dao.select();
+        List<OurBookDto> list2 = new ArrayList<>();
+
+        for (AladinDto aladinDto : list1) {
+
+            // 전체 도서 중에서 이미 존재하지 않는 도서는 list2에 추가
+            String finalBookNameText = aladinDto.getBookname();
+//            log.info(finalBookNameText);
+            boolean exist = existBooks.stream().anyMatch(existingBook -> existingBook.getBookname().equals(finalBookNameText));
+            if (!exist) {
+                OurBookDto dto2 = OurBookDto.builder()
+                        .bookname(finalBookNameText)
+                        .build();
+                list2.add(dto2);
+            }
+        }
+        // 여러번 insert 되는 문제를 막기위해 비동기로 진행
+        if (!list2.isEmpty()) {
+            log.info("insert 시작");
+            dao.insert(list2);
+            log.info("ourbook에 없는 정보를 insert 하였습니다.");
+        } else {
+            log.info("추가된 책이 없습니다.");
+        }
+    }
 
     @Async
     public void getYes24Another() throws IOException {

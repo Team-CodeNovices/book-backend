@@ -2,6 +2,7 @@ package com.example.book.controller;
 
 import com.example.book.dto.AladinDto;
 import com.example.book.dto.Yes24Dto;
+import com.example.book.service.AladinService;
 import com.example.book.service.Yes24Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -21,13 +22,19 @@ import java.util.concurrent.Future;
 public class Yes24Controller {
 
     private final Yes24Service service;
+    private final AladinService service2;
 
     //controller
     @GetMapping("/yes24")
     public void yes24Ranking(Model model) throws IOException {
         List<Yes24Dto> list = service.getYes24Top50();
         model.addAttribute("list", list);
+    }
 
+    @GetMapping("/aladin")
+    public void aladinRanking(Model model) throws IOException {
+        List<AladinDto> list = service2.getAladinTop50();
+        model.addAttribute("list", list);
 
     }
 

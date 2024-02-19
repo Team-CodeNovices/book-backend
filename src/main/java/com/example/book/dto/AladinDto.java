@@ -14,8 +14,6 @@ public class AladinDto extends OurBookDto{
     private String bookname;
     private String author;
     private String publisher;
-    private String genre;
-    private String bookdetail;
     private String price;
     private String writedate;
 }

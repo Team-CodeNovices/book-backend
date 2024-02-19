@@ -39,7 +39,7 @@ public class OurBookService {
     
     //알라딘 전체 데이터 불러오기
     public List<AladinDto> aladinAll() throws IOException {
-        List<AladinDto> aladinAll = service2.getAladinAllData();
+        List<AladinDto> aladinAll = service2.getAladinTop50();
         return  aladinAll;
     }
 
