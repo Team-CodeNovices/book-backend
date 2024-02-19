@@ -29,17 +29,20 @@ public class Yes24Service {
 
     private final OurBookMapper dao;
 
+    @Async
+    public void getYes24Another() throws IOException {
+        getYes24Data(10, 31);
+    }
 
-    // 전체정보 가져오기
-    public List<Yes24Dto> getYes24AllData() throws IOException {
+    public List<Yes24Dto> getYes24Data(int startP, int stopP) throws IOException {
         String baseUrl = "https://www.yes24.com/";
         List<Yes24Dto> list = new ArrayList<>();
         List<OurBookDto> list2 = new ArrayList<>();
         List<OurBookDto> existBooks = dao.select();
         int ranking = 0;
-        int totalpage = 42; // 999위까지 페이지 갯수
+        int totalpage = stopP; // 999위까지 페이지 갯수
 
-        for (int page = 1; page <= totalpage; page++) {
+        for (int page = startP; page <= totalpage; page++) {
             String pageUrl = baseUrl + "/Product/Category/BestSeller?categoryNumber=001&pageNumber=" + page;
             Document document = Jsoup.connect(pageUrl).get();
             Elements yes24 = document.getElementsByAttributeValue("class", "img_grp");
@@ -92,6 +95,7 @@ public class Yes24Service {
 
                         // 전체 도서 중에서 이미 존재하는 도서는 list2에 추가
                         String finalBookNameText = bookNameText;
+                        log.info(finalBookNameText);
                         boolean exist = existBooks.stream().anyMatch(existingBook -> existingBook.getBookname().equals(finalBookNameText));
                         if (!exist) {
                             OurBookDto dto2 = OurBookDto.builder()
@@ -103,6 +107,7 @@ public class Yes24Service {
                         e.printStackTrace();
                     }
                 });
+
                 futures.add(future);
             }
 
@@ -113,6 +118,7 @@ public class Yes24Service {
 
         // 여러번 insert 되는 문제를 막기위해 비동기로 진행
         if (!list2.isEmpty()) {
+            log.info("insert 시작");
             dao.insert(list2);
             log.info("ourbook에 없는 정보를 insert 하였습니다.");
         } else {
@@ -120,6 +126,15 @@ public class Yes24Service {
         }
 
         return list;
+    }
+    // 전체정보 가져오기
+    public List<Yes24Dto> getYes24Top50() throws IOException {
+        //50위까지만 처리하고 리턴
+        List<Yes24Dto> yes24Top50 = getYes24Data(1, 2);
+
+        getYes24Another();
+
+        return yes24Top50;
     }
 
 

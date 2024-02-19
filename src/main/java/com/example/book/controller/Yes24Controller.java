@@ -25,7 +25,7 @@ public class Yes24Controller {
     //controller
     @GetMapping("/yes24")
     public void yes24Ranking(Model model) throws IOException {
-        List<Yes24Dto> list = service.getYes24AllData();
+        List<Yes24Dto> list = service.getYes24Top50();
         model.addAttribute("list", list);
 
 
