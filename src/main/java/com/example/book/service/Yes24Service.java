@@ -37,10 +37,10 @@ public class Yes24Service {
         List<OurBookDto> list2 = new ArrayList<>();
         List<OurBookDto> existBooks = dao.select();
         int ranking = 0;
-        int totalpage = 42; // 999위까지 페이지 갯수
+        int totalpage = 9; // 999위까지 페이지 갯수
 
         for (int page = 1; page <= totalpage; page++) {
-            String pageUrl = baseUrl + "/Product/Category/BestSeller?categoryNumber=001&pageNumber=" + page;
+            String pageUrl = baseUrl + "/Product/Category/BestSeller?categoryNumber=001&pageNumber=" + page + "&pageSize=120";
             Document document = Jsoup.connect(pageUrl).get();
             Elements yes24 = document.getElementsByAttributeValue("class", "img_grp");
             Elements yes24url = yes24.select("a[href]");
@@ -124,16 +124,7 @@ public class Yes24Service {
 
 
 
-    // 제거할 태그의 패턴을 리스트에 저장합니다.
-    List<String> removePatterns = Arrays.asList(
-            "<iframe.*?>",
-            "</?div\\.infoWrap_privew>",
-            "<br>", "<br/>",
-            "</iframe>",
-            "</b>",
-            "<B>",
-            "<b>"
-    );
+
 
 
 }
