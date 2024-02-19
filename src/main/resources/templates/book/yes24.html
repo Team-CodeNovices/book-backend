@@ -12,6 +12,7 @@
             <th>책이름</th>
             <th>저자</th>
             <th>출판사</th>
+            <th>가격</th>
             <th>출판일</th>
         </tr>
         <tr th:each="dto : ${list} ">
@@ -19,6 +20,7 @@
             <td th:text="${dto.bookname}"></td>
             <td th:text="${dto.author}"></td>
             <td th:text="${dto.publisher}"></td>
+            <td th:text="${dto.price}">원</td>
             <td th:text="${dto.writedate}"></td>
         </tr>
     </table>
