@@ -1,12 +1,11 @@
 package com.example.book.service;
 
 import com.example.book.dao.OurBookMapper;
+import com.example.book.dto.AladinDto;
 import com.example.book.dto.OurBookDto;
 import com.example.book.dto.Yes24Dto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -23,70 +22,89 @@ public class OurBookService {
 
     private final OurBookMapper dao;
     private final Yes24Service service;
+    private final AladinService service2;
 
-
+    
+    //ourbook 리스트 불러오기
     public List<OurBookDto> selectlist() throws IOException {
         return dao.select();
     }
+    
 
-    public List<Yes24Dto> yes() throws IOException {
-        List<Yes24Dto> yesBooks = service.getYes24Data();
-        return yesBooks;
-    }
-
+    //yes24 전체 데이터 불러오기
     public List<Yes24Dto> yes24All() throws IOException {
-        List<Yes24Dto> yesAll = service.getYes24AllData();
+        List<Yes24Dto> yesAll =  service.getYes24Top50();
         return  yesAll;
     }
+    
+    //알라딘 전체 데이터 불러오기
+    public List<AladinDto> aladinAll() throws IOException {
+        List<AladinDto> aladinAll = service2.getAladinAllData();
+        return  aladinAll;
+    }
 
 
-
-
-    //다른 사이트에서 추가된 책들 ourBook에 넣는 메소드
-    @Scheduled(cron = "0 */2 * * * *")
+//    @Scheduled(cron = "0 */10 * * * *")
     public List<OurBookDto> mergeData() throws IOException {
-        List<OurBookDto> mergedata = new ArrayList<>();
-        List<OurBookDto> book = selectlist();
-        List<Yes24Dto> yes = yes24All();
-        String msg = null;
+        List<OurBookDto> mergedData = new ArrayList<>();
+        List<OurBookDto> existingBooks = selectlist();
+        List<Yes24Dto> yes24Books = yes24All();
+        List<AladinDto> aladinBooks = aladinAll();
+        String msg;
 
-        if (book == null || book.isEmpty()) {
+        if (existingBooks == null || existingBooks.isEmpty()) {
             // OurBook 리스트가 비어있는 경우
-            mergedata.addAll(yes.stream().map(yes24Dto ->
+            mergedData.addAll(yes24Books.stream().map(yes24Dto ->
                     OurBookDto.builder()
                             .bookname(yes24Dto.getBookname())
+                            .author(yes24Dto.getAuthor())
+                            .publisher(yes24Dto.getPublisher())
+                            .bookdetail(yes24Dto.getBookdetail())
+                            .writedate(yes24Dto.getWritedate())
                             .build()
             ).toList());
-            msg="리스트가 비어있어";
+            msg = "리스트가 비어있어";
 
         } else {
-            // 기존 책 목록에 없는 모든 새로운 책들 추가
-            Set<String> existingBookNames = book.stream()
+            // 기존 OurBook 리스트에 있는 책들의 이름을 Set에 저장합니다.
+            Set<String> existingBookNames = existingBooks.stream()
                     .map(OurBookDto::getBookname)
                     .collect(Collectors.toSet());
 
-            for (Yes24Dto yes24Dto : yes) {
+            // Yes24와 비교하여 새로운 책들을 추가합니다.
+            for (Yes24Dto yes24Dto : yes24Books) {
                 if (!existingBookNames.contains(yes24Dto.getBookname())) {
-                    mergedata.add(
+                    mergedData.add(
                             OurBookDto.builder()
                                     .bookname(yes24Dto.getBookname())
                                     .build()
                     );
                 }
             }
-            msg="새로운 책들이 추가되어";
+            log.info("알라딘 검사 끝");
+
+            // 알라딘과 비교하여 새로운 책들을 추가합니다.
+            for (AladinDto aladinDto : aladinBooks) {
+                if (!existingBookNames.contains(aladinDto.getBookname())) {
+                    mergedData.add(
+                            OurBookDto.builder()
+                                    .bookname(aladinDto.getBookname())
+                                    .build()
+                    );
+                }
+            }
+            msg = "새로운 책들이 추가되어";
         }
 
-        if (!mergedata.isEmpty()) {
-            dao.insert(mergedata);
+        if (!mergedData.isEmpty()) {
+            dao.insert(mergedData);
             log.info(msg + " 리스트에 추가합니다.");
         } else {
             log.info("변경 사항 없음");
         }
 
-        return mergedata;
+        return mergedData;
     }
-
 
 
 

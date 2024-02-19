@@ -17,6 +17,7 @@ public class OurBookController {
 
     private final OurBookService book;
 
+    //ourbook 리스트 보기
     @GetMapping("/all")
     public void selectList(Model model) throws IOException {
         List<OurBookDto> list = book.selectlist();
