@@ -11,6 +11,7 @@ public interface OurBookMapper {
     //insert
     void insert(List<OurBookDto> dto);
 
+    List<OurBookDto> selectByBookname(String bookname);
     List<OurBookDto> select();
 
 }

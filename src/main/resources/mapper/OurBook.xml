@@ -22,7 +22,10 @@
         select * from ourBook
     </select>
 
-
+    <select id="selectByBookname">
+        select  * from ourbook
+        where bookname = #{bookname}
+    </select>
 
 
 </mapper>

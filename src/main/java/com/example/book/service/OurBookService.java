@@ -29,7 +29,11 @@ public class OurBookService {
     public List<OurBookDto> selectlist() throws IOException {
         return dao.select();
     }
-    
+
+    //ourbook 상세내용 불러오기
+    public List<OurBookDto> selectByBookname(String bookname){
+        return dao.selectByBookname(bookname);
+    }
 
     //yes24 전체 데이터 불러오기
     public List<Yes24Dto> yes24All() throws IOException {
