@@ -1,5 +1,8 @@
 package com.example.book.dto;
 
+import com.example.book.service.BookApiService;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.*;
 
 import java.sql.Date;
@@ -8,6 +11,7 @@ import java.sql.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OurBookDto {
 
     private String bookname;        //책이름
@@ -28,5 +32,16 @@ public class OurBookDto {
         this.writedate = writedate;
     }
 
+    @Override
+    public String toString() {
+        return "OurBookDto{" +
+                "author='" + author + '\'' +
+                ", publisher='" + publisher + '\'' +
+                ", genre='" + genre + '\'' +
+                ", bookdetail='" + bookdetail + '\'' +
+                ", price='" + price + '\'' +
+                ", writedate='" + writedate + '\'' +
+                '}';
+    }
 
 }

@@ -22,6 +22,25 @@
         select * from ourBook
     </select>
 
+    <select id="selectnull" resultType="OurBookDto">
+        select * from ourBook where bookdetail is null
+    </select>
+
+
+    <update id="updateBooksByList" parameterType="java.util.List">
+        <foreach collection="list" item="book" separator=","  >
+            UPDATE ourBook
+            SET
+            author = #{book.author},
+            publisher = #{book.publisher},
+            genre = #{book.genre},
+            bookdetail = #{book.bookdetail},
+            price = #{book.price},
+            writedate = #{book.writedate}
+            WHERE bookname = #{book.bookname}
+        </foreach>
+    </update>
+
 
 
 
