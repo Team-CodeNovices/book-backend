@@ -24,6 +24,12 @@ public class OurBookController {
         model.addAttribute("list",list);
     }
 
+    @GetMapping("/bookdetail")
+    public void selectByBookname(Model model,String bookname){
+        List<OurBookDto> list = book.selectByBookname(bookname);
+        model.addAttribute("list",list);
+    }
+
 
 
 }
