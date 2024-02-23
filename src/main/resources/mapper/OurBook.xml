@@ -26,9 +26,8 @@
         select * from ourBook where bookdetail is null
     </select>
 
-
     <update id="updateBooksByList" parameterType="java.util.List">
-        <foreach collection="list" item="book" separator=","  >
+        <foreach collection="list" item="book" separator=";"  >
             UPDATE ourBook
             SET
             author = #{book.author},
@@ -40,8 +39,5 @@
             WHERE bookname = #{book.bookname}
         </foreach>
     </update>
-
-
-
 
 </mapper>

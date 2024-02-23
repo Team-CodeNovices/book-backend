@@ -2,7 +2,6 @@ package com.example.book.service;
 
 import com.example.book.dao.OurBookMapper;
 import com.example.book.dto.OurBookDto;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -51,7 +50,7 @@ public class BookApiService {
                     String authorText = item.path("author").asText();
                     String cleanedAuthor = authorText.substring(0, authorText.indexOf('(')).replaceAll("'", "").trim();
                     apiData.setAuthor(cleanedAuthor);
-                    
+
                     apiData.setPublisher(item.path("publisher").asText());
                     apiData.setBookdetail(item.path("description").asText());
                     apiData.setPrice(item.path("priceStandard").asText());
@@ -61,6 +60,13 @@ public class BookApiService {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            OurBookDto apiData = new OurBookDto();
+            apiData.setAuthor("파싱 실패");
+            apiData.setPublisher("파싱 실패");
+            apiData.setBookdetail("파싱 실패");
+            apiData.setPrice("파싱 실패");
+            apiData.setWritedate("파싱 실패");
+            bookList.add(apiData);
         }
         return bookList;
     }
@@ -73,6 +79,7 @@ public class BookApiService {
         String nullInfo = "정보없음";
         for (OurBookDto bookDto : nullList) {
             List<OurBookDto> updatedBookDtoList = getBookDetailsFromApi(bookDto.getBookname());
+            // api 에서 받아온 정보가 없을 시 nullInfo 삽입
             if (updatedBookDtoList.isEmpty()) {
                 bookDto.setBookname(bookDto.getBookname());
                 bookDto.setAuthor(nullInfo);
@@ -99,12 +106,13 @@ public class BookApiService {
                 }
             }
         }
-        // 기존 리스트에 새로운 리스트의 내용을 추가
-        nullList.addAll(updatedList);
-        // 업데이트된 책 정보를 데이터베이스에 업데이트
         dao.updateBooksByList(nullList);
+        // 업데이트된 책 정보를 데이터베이스에 업데이트
         log.info(nullCount + "개를 제외한" + "업데이트 완료!!");
     }
+
+
+
 
 
 }
