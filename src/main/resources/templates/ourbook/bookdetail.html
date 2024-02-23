@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>전체</title>
+    <title>책 상세내용</title>
 </head>
 <body>
 <div>
@@ -11,7 +11,7 @@
             <th>책이름</th>
         </tr>
         <tr th:each="dto : ${list} ">
-            <td><a th:href="@{bookdetail(bookname=${dto.bookname})}">[[${dto.bookname}]]</a></td>
+            <td>[[${dto.bookname}]]</td>
         </tr>
     </table>
     <a th:href="@{/}">홈으로</a>

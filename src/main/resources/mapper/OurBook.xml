@@ -22,6 +22,7 @@
         select * from ourBook
     </select>
 
+
     <select id="selectnull" resultType="OurBookDto">
         select * from ourBook where bookdetail is null
     </select>
@@ -39,5 +40,6 @@
             WHERE bookname = #{book.bookname}
         </foreach>
     </update>
+
 
 </mapper>

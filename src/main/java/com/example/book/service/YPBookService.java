@@ -1,7 +1,10 @@
 package com.example.book.service;
 
+import com.example.book.dao.OurBookMapper;
+import com.example.book.dto.OurBookDto;
 import com.example.book.dto.YPBookDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -16,15 +19,23 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class YPBookService {
 
+    private final OurBookMapper dao;
+
+    //영품문고 책정보 리스트 불러오고 이름 비교해서 OurBook테이블에 넣는 메소드
     public List<YPBookDto> list() throws IOException {
+        List<OurBookDto> existBooks = dao.select();
+        List<OurBookDto> list2 = new ArrayList<>();
+
         Document doc = null;
         String baseUrl = "https://www.ypbooks.co.kr";
         doc = Jsoup.connect("https://www.ypbooks.co.kr/book_arrange.yp?targetpage=book_week_best&pagetype=5&depth=1").get();
         Elements contentslink = doc.getElementsByAttributeValue("class", "boxiconset_bk_tt");
         Elements links = contentslink.select("a[href]");
         List<YPBookDto> list = new ArrayList<>();
+        int ranking = 0;
 
         for (Element link : links) {
             // a 태그의 href 속성 가져오기
@@ -41,36 +52,35 @@ public class YPBookService {
             String publisher = publisherClass.text();
             String publicationDate = publicationDateClass.text();
             String title = titleTag.replaceFirst("-.*", "");
-
-            // div 태그 선택
-            Elements divs = innerDocument.select("div.introduce");
-            String bText = null;
-            String nextText = null;
-            // div 태그 내부의 b 태그와 br 태그 출력
-            // div 태그 내부의 b 태그와 br 태그 출력
-            for (Element bTag : divs) {
-                bText = bTag.text();
-                System.out.println("Text inside <b>: " + bText);
-            }
-
-            // div 태그 내부의 br 태그 출력
-            Elements brTags = divs.select("br");
-            for (Element brTag : brTags) {
-                Node sibling = brTag.nextSibling(); // 다음 형제 노드 가져오기
-                if (sibling != null && sibling instanceof TextNode) { // 형제 노드가 텍스트 노드인지 확인
-                    nextText = ((TextNode) sibling).text().trim(); // 형제 노드가 텍스트 노드인 경우 텍스트 가져오기
-                    System.out.println("Text after <br>: " + nextText);
-                }
-            }
+            ranking++;
 
             YPBookDto dto = YPBookDto.builder()
+                    .ranking(ranking)
                     .bookname(title)
                     .author(author)
                     .publisher(publisher)
-                    .bookInfo(bText + nextText)
                     .publicationdate(publicationDate)
                     .build();
             list.add(dto);
+        }
+        for(YPBookDto ypDto : list) {
+
+            String finalBookNameText = ypDto.getBookname();
+
+            boolean exist = existBooks.stream().anyMatch(existingBook -> existingBook.getBookname().equals(finalBookNameText));
+            if (!exist) {
+                OurBookDto dto2 = OurBookDto.builder()
+                        .bookname(finalBookNameText)
+                        .build();
+                list2.add(dto2);
+            }
+        }
+        if (!list2.isEmpty()) {
+            log.info("insert 시작");
+            dao.insert(list2);
+            log.info("ourbook에 없는 정보를 insert 하였습니다.");
+        } else {
+            log.info("추가된 책이 없습니다.");
         }
         return list;
     }

@@ -10,18 +10,10 @@
 <table>
     <tr>
         <th>책이름</th>
-        <th>저자</th>
-        <th>출판사</th>
-        <th>책정보</th>
-        <th>출판일</th>
     </tr>
     <th:block th:each="ypbook : ${list}">
         <tr>
             <td th:text="${ypbook.bookname}"></td>
-            <td th:text="${ypbook.author}"></td>
-            <td th:text="${ypbook.publisher}"></td>
-            <td th:text="${ypbook.bookInfo}"></td>
-            <td th:text="${ypbook.publicationdate}"></td>
         </tr>
     </th:block>
 </table>
