@@ -24,7 +24,8 @@ public class BookApiController {
     @GetMapping("/bookapi")
     public void selectapi(Model model) throws IOException {
         List<OurBookDto> list = service.selectList();
-        service.updateBooksFromApi();
+//        service.updateBooksFromApi();
+        service.keywordFromApi();
         model.addAttribute("list",list);
     }
 

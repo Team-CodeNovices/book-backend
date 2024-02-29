@@ -24,6 +24,7 @@ public class Yes24Service {
     public static List<Yes24Dto> getYes24DataNew(int startP, int stopP) throws IOException {
         String baseUrl = "https://www.yes24.com/";
         List<Yes24Dto> list = new ArrayList<>();
+        int count = 0;
         int totalpage = stopP; // 999위까지 페이지 갯수
         for (int page = startP; page <= totalpage; page++) {
             String pageUrl = baseUrl + "/Product/Category/BestSeller?categoryNumber=001&pageNumber=" + page + "&pageSize=120";
@@ -31,6 +32,10 @@ public class Yes24Service {
             Elements goods = doc.select("[data-goods-no]");
 
             for (Element good : goods) {
+                count++;
+                if(count >=51){
+                    break;
+                }
 //                String dataGoodsNo = good.attr("data-goods-no");
                 String gdName = good.select(".gd_name").text();
                 Elements yesBs = good.select(".yes_b"); // 가격과 평점 모두 포함된 요소
@@ -51,6 +56,7 @@ public class Yes24Service {
                 );
                 list.add(dto);
             }
+
         }
         return list;
     }
