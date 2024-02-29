@@ -32,7 +32,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:2.3.0'
     // 크롤링 의존성
-    implementation 'org.jsoup:jsoup:1.15.3'
+    implementation 'org.jsoup:jsoup:1.11.3'
     // Swagger 의존성
     implementation 'io.springfox:springfox-boot-starter:3.0.0'
     //chat gpt 의존성

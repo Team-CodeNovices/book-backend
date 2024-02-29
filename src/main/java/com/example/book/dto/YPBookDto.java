@@ -9,9 +9,9 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class YPBookDto {
+    private int ranking;
     private String bookname;
     private String author;
     private String publisher;
-    private String bookInfo;
     private String publicationdate;
 }
