@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.util.List;
 //@Controller
-@RestController@Api(tags = {"OurBook 정보를 제공하는 Controller"})
+@RestController
+@Api(tags = {"OurBook 정보를 제공하는 Controller"})
 @RequiredArgsConstructor
 @RequestMapping("/ourbook")
 public class OurBookController {
@@ -24,7 +25,7 @@ public class OurBookController {
     //ourbook 리스트 보기
     @ApiOperation(value = "OurBook 전체 리스트")
     @GetMapping("/all")
-    public List<OurBookDto> selectList(Model model) throws IOException {
+    public List<OurBookDto> selectList() throws IOException {
         return book.selectlist();
     }
 

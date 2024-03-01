@@ -48,6 +48,7 @@ public class OurBookDto {
                 ", bookdetail='" + bookdetail + '\'' +
                 ", price='" + price + '\'' +
                 ", writedate='" + writedate + '\'' +
+                ", mainkeyword='" + mainkeyword + '\'' +
                 '}';
     }
 

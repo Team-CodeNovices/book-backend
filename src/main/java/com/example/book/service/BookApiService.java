@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -89,6 +90,7 @@ public class BookApiService {
     @Scheduled(cron = "0 0/60 * * * *")     //매 시간 정각
     public void updateBooksFromApi() {
         List<OurBookDto> nullList = dao.selectnull();
+        if (!nullList.isEmpty()) {
         List<OurBookDto> updatedList = new ArrayList<>();
         int nullCount = 0;
         String nullInfo = "정보없음";
@@ -128,12 +130,15 @@ public class BookApiService {
         dao.updateBooksByList(nullList);
         // 업데이트된 책 정보를 데이터베이스에 업데이트
         log.info(nullCount + "개를 제외한" + "업데이트 완료!!");
+        }else{
+        log.info("업데이트할 리스트가 없어 종료합니다.");
+        }
     }
 
     // OpenAI 요청을 보내는 메소드
     public OpenAIResponse sendOpenAIRequest(String bookName) {
         String OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
-        String OPENAI_API_KEY = "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";
+        String OPENAI_API_KEY = "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";
 
         RestTemplate restTemplate = new RestTemplate();
 
@@ -143,7 +148,7 @@ public class BookApiService {
         List<Map<String, String>> messages = new ArrayList<>();
         Map<String, String> message = new HashMap<>();
         message.put("role", "user");
-        message.put("content", "Book name: " + bookName);
+        message.put("content", bookName + "이 책에 관련된 관련 키워드 5개만 알려줘");
         messages.add(message);
         requestBody.put("messages", messages);
         requestBody.put("temperature", 0.7);
@@ -155,18 +160,35 @@ public class BookApiService {
 
         // HTTP 요청 보내기
         HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
-        ResponseEntity<OpenAIResponse> responseEntity = restTemplate.exchange(OPENAI_API_URL, HttpMethod.POST, requestEntity, OpenAIResponse.class);
+        ObjectMapper objectMapper = new ObjectMapper();
 
-        return responseEntity.getBody();
+        try {
+            ResponseEntity<String> responseEntity = restTemplate.exchange(
+                    OPENAI_API_URL, HttpMethod.POST, requestEntity, String.class);
+            JsonNode root = objectMapper.readTree(responseEntity.getBody());
+            String content = root.path("choices").get(0).get("message").get("content").asText();
+            OpenAIResponse openAIResponse = new OpenAIResponse();
+            openAIResponse.setText(content);
+            return openAIResponse;
+        } catch (HttpClientErrorException e) {
+            System.err.println("HTTP Client Error: " + e.getStatusCode() + " - " + e.getStatusText());
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
     }
 
 //    @Scheduled(cron = "0 0/60 * * * *") // 매 시간 정각
 public void keywordFromApi() {
     List<OurBookDto> nullList = dao.keywordnull();
+    if(!nullList.isEmpty()) {
+
     List<OurBookDto> updatedList = new ArrayList<>();
     for (OurBookDto bookDto : nullList) {
         String bookName = bookDto.getBookname();
-        OpenAIResponse response = sendOpenAIRequest(bookName); // OpenAI 요청을 보냅니다.
+        OpenAIResponse response = sendOpenAIRequest(bookName);
         if (response != null) {
             bookDto.setMainkeyword(response.getText());
             updatedList.add(bookDto);
@@ -174,8 +196,11 @@ public void keywordFromApi() {
             log.error("OpenAI 요청 실패: bookName=" + bookName);
         }
     }
-    dao.updateBooksByList(updatedList);
-    log.info("업데이트 완료");
+    dao.updateMainKeyword(updatedList);
+    log.info("메인 키워드 업데이트 완료");
+    }else {
+    log.info("비어있는 키워드가 없어 종료합니다.");
+    }
 }
 
 

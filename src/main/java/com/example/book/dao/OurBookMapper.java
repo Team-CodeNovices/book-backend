@@ -23,6 +23,9 @@ public interface OurBookMapper {
 
     //업데이트 스케줄러
     void updateBooksByList(List<OurBookDto> nullList);
+    
+    //메인키워드 업데이트
+    void updateMainKeyword(List<OurBookDto> nullList);
 
 
 
