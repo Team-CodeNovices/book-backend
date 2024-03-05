@@ -16,14 +16,14 @@ import java.util.concurrent.Future;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/aladin")
+@RequestMapping("/books")
 public class AladinController {
 
     private final AladinService service;
 
     @GetMapping("/aladin")
     public void aladinRanking(Model model) throws IOException {
-        List<AladinDto> list = service.getAladinAllData();
+        List<AladinDto> list = service.getAladinTop50();
         model.addAttribute("list", list);
 
     }
