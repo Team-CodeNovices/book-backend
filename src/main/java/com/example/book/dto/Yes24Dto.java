@@ -10,6 +10,7 @@ import java.sql.Date;
 public class Yes24Dto extends OurBookDto {
 
         private int ranking;
+        private String image;
         private String bookname;
         private String author;
         private String publisher;

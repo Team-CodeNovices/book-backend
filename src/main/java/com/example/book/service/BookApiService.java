@@ -34,8 +34,8 @@ public class BookApiService {
     }
 
 
-    //받은 bookname으로 api 요청하고 Json을 java로 파싱해서 저장하는 메소드
-    public List<OurBookDto> getBookDetailsFromApi(String bookName) {
+    //받은 bookname으로 알라딘 api 저장하는 메소드
+    public List<OurBookDto> getAladinApi(String bookName) {
         // 외부 API의 엔드포인트 URL
         String apiUrl = "http://www.aladin.co.kr/ttb/api/ItemSearch.aspx?ttbkey=ttbamdshin1645001&QueryType=Title&MaxResults=1&SearchTarget=Book&output=js&Version=20131101&Query=" + bookName;
 
@@ -64,7 +64,6 @@ public class BookApiService {
                     String genre = categories[2];
                     apiData.setGenre(genre);
                     apiData.setPublisher(item.path("publisher").asText());
-                    apiData.setBookdetail(item.path("description").asText());
                     apiData.setPrice(item.path("priceStandard").asText());
                     apiData.setWritedate(item.path("pubDate").asText());
                     bookList.add(apiData);
@@ -86,7 +85,48 @@ public class BookApiService {
         return bookList;
     }
 
-    //api Data 받아서 업데이트 처리하는 메소드
+
+    //받은 bookname으로 알라딘 api 저장하는 메소드
+    public List<OurBookDto> getNaverApi(String bookName) {
+        // 외부 API의 엔드포인트 URL
+        String apiUrl = "https://openapi.naver.com/v1/search/book.json?display=1&query=" + bookName;
+
+        // REST 요청을 보내기 위한 RestTemplate 객체 생성
+        RestTemplate restTemplate = new RestTemplate();
+
+        // API에 GET 요청을 보내고 JSON 형식으로 응답을 받아옴
+        String jsonResponse = restTemplate.getForObject(apiUrl, String.class);
+
+        // JSON 응답을 분석하여 필요한 필드 추출
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<OurBookDto> bookList = new ArrayList<>();
+        try {
+            JsonNode root = objectMapper.readTree(jsonResponse);
+            JsonNode items = root.path("item");
+            if (items.isArray()) {
+                for (JsonNode item : items) {
+                    OurBookDto apiData = new OurBookDto();
+                    apiData.setBookdetail(item.path("description").asText());
+                    bookList.add(apiData);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            OurBookDto apiData = new OurBookDto();
+            apiData.setImage("파싱 실패");
+            apiData.setAuthor("파싱 실패");
+            apiData.setPublisher("파싱 실패");
+            apiData.setGenre("파싱 실패");
+            apiData.setBookdetail("파싱 실패");
+            apiData.setPrice("파싱 실패");
+            apiData.setWritedate("파싱 실패");
+            apiData.setMainkeyword("파싱 실패");
+            bookList.add(apiData);
+        }
+        return bookList;
+    }
+
+    //알라딘 api Data 받아서 업데이트 처리하는 메소드
     @Scheduled(cron = "0 0/60 * * * *")     //매 시간 정각
     public void updateBooksFromApi() {
         List<OurBookDto> nullList = dao.selectnull();
@@ -95,7 +135,7 @@ public class BookApiService {
         int nullCount = 0;
         String nullInfo = "정보없음";
         for (OurBookDto bookDto : nullList) {
-            List<OurBookDto> updatedBookDtoList = getBookDetailsFromApi(bookDto.getBookname());
+            List<OurBookDto> updatedBookDtoList = getAladinApi(bookDto.getBookname());
             // api 에서 받아온 정보가 없을 시 nullInfo 삽입
             if (updatedBookDtoList.isEmpty()) {
                 bookDto.setImage(nullInfo);
@@ -118,7 +158,7 @@ public class BookApiService {
                     bookDto.setAuthor(updatedBookDto.getAuthor());
                     bookDto.setPublisher(updatedBookDto.getPublisher());
                     bookDto.setGenre(updatedBookDto.getGenre());
-                    bookDto.setBookdetail(updatedBookDto.getBookdetail());
+                    bookDto.setBookdetail(null);
                     bookDto.setPrice(updatedBookDto.getPrice());
                     bookDto.setWritedate(updatedBookDto.getWritedate());
                     bookDto.setMainkeyword(null);
@@ -134,6 +174,11 @@ public class BookApiService {
         log.info("업데이트할 리스트가 없어 종료합니다.");
         }
     }
+
+
+
+
+
 
     // OpenAI 요청을 보내는 메소드
     public OpenAIResponse sendOpenAIRequest(String bookName) {
@@ -179,8 +224,9 @@ public class BookApiService {
         }
 
     }
-
-//    @Scheduled(cron = "0 0/60 * * * *") // 매 시간 정각
+    
+// chat api로 관련 키워드 저장하는 메소드
+//@Scheduled(cron = "0 0/60 * * * *") // 매 시간 정각
 public void keywordFromApi() {
     List<OurBookDto> nullList = dao.keywordnull();
     if(!nullList.isEmpty()) {
@@ -202,6 +248,7 @@ public void keywordFromApi() {
     log.info("비어있는 키워드가 없어 종료합니다.");
     }
 }
+
 
 
 

@@ -147,6 +147,7 @@ public class RankingWorker {
             for (Element good : goods) {
 //                String dataGoodsNo = good.attr("data-goods-no");
                 String gdName = good.select(".gd_name").text();
+                String image = good.select(".lazy").attr("data-original"); // 이미지 URL 가져오기
                 Elements yesBs = good.select(".yes_b"); // 가격과 평점 모두 포함된 요소
                 String price = yesBs.stream()
                         .filter(e -> e.text().contains("원")) // "원"을 포함하는 텍스트를 가진 요소만 필터링
@@ -161,6 +162,7 @@ public class RankingWorker {
 
                 Yes24Dto dto = new Yes24Dto(
                         Integer.parseInt(rank),
+                        image,
                         gdName,
                         infoAuth,
                         infoPub,
