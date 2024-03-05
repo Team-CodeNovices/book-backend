@@ -23,6 +23,38 @@
     </select>
 
 
+    <select id="selectnull" resultType="OurBookDto">
+        select * from ourBook where bookdetail is null
+    </select>
+
+    <select id="keywordnull" resultType="OurBookDto">
+        select * from ourBook where mainkeyword is null
+    </select>
+
+    <update id="updateBooksByList" parameterType="java.util.List">
+        <foreach collection="list" item="book" separator=";"  >
+            UPDATE ourBook
+            SET
+            image = #{book.image},
+            author = #{book.author},
+            publisher = #{book.publisher},
+            genre = #{book.genre},
+            bookdetail = #{book.bookdetail},
+            price = #{book.price},
+            writedate = #{book.writedate},
+            mainkeyword = #{book.mainkeyword}
+            WHERE bookname = #{book.bookname}
+        </foreach>
+    </update>
+
+    <update id="updateMainKeyword" parameterType="java.util.List">
+        <foreach collection="list" item="book" separator=";"  >
+            UPDATE ourBook
+            SET
+            mainkeyword = #{book.mainkeyword}
+            WHERE bookname = #{book.bookname}
+        </foreach>
+    </update>
 
 
 </mapper>

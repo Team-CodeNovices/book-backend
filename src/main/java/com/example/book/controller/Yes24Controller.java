@@ -4,6 +4,8 @@ import com.example.book.dto.AladinDto;
 import com.example.book.dto.Yes24Dto;
 import com.example.book.service.AladinService;
 import com.example.book.service.Yes24Service;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,7 +18,9 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-@Controller
+//@Controller
+@Api(tags = {"Yes24 정보를 제공하는 Controller"})
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/book")
 public class Yes24Controller {
@@ -24,7 +28,8 @@ public class Yes24Controller {
     private final Yes24Service service;
     private final AladinService service2;
 
-    //controller
+    //restController
+    @ApiOperation(value = "yes24 top50위 리스트")
     @GetMapping("/yes24")
     public void yes24Ranking(Model model) throws IOException {
         List<Yes24Dto> list = service.getYes24Top50();
@@ -38,15 +43,12 @@ public class Yes24Controller {
 
     }
 
-    //restController
+    //controller
 //    @GetMapping("/yes24")
-//    public List<Yes24Dto> yes24Ranking() throws IOException {
-//        return service.getYes24AllData();
-//
-//
+//    public void yes24Ranking(Model model) throws IOException {
+//        List<Yes24Dto> list = service.getYes24Top50();
+//        model.addAttribute("list", list);
 //    }
-
-
 
 
 }

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div>
+    <table class= "table">
+        <tr>
+            <th>책이름</th>
+            <th>저자</th>
+            <th>출판사</th>
+            <th>장르</th>
+            <th>상세내용</th>
+            <th>가격</th>
+            <th>출판일</th>
+        </tr>
+        <tr th:each="dto : ${list} ">
+            <td th:text="${dto.bookname}"></td>
+            <td th:text="${dto.author}"></td>
+            <td th:text="${dto.publisher}"></td>
+            <td th:text="${dto.genre}"></td>
+            <td th:text="${dto.bookdetail}"></td>
+            <td th:text="${dto.price}">원</td>
+            <td th:text="${dto.writedate}"></td>
+        </tr>
+    </table>
+    <a th:href="@{/}">홈으로</a>
+</div>
+</body>
+</html>
