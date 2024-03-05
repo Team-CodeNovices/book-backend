@@ -44,12 +44,12 @@ jobs:
           container-name: novices-book
           image: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/novices/book:latest
 
-      # - name: Deploy Amazon ECS task definition
-      #   uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-      #   with:
-      #     service: book
-      #     cluster: codenovices
-      #     task-definition: ${{ steps.task-def.outputs.task-definition }}
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          service: book
+          cluster: codenovices
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
 
       - name: Cleanup
         run: docker logout ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
