@@ -1,7 +1,9 @@
 package com.example.book.service;
 
 import com.example.book.dao.OurBookMapper;
+import com.example.book.dto.AladinDto;
 import com.example.book.dto.OurBookDto;
+import com.example.book.dto.Yes24Dto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
