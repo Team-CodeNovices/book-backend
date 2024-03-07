@@ -47,9 +47,11 @@ public class YPBookService {
             Elements authorClass = innerDocument.getElementsByAttributeValue("class", "author");
             Elements publisherClass = innerDocument.getElementsByAttributeValue("class", "publisher");
             Elements publicationDateClass = innerDocument.getElementsByAttributeValue("class", "publication-date");
+            Element imageClass = innerDocument.select("div.sm-book span.cover img").get(0);
             String titleTag = titleClass.select("h3").text();
             String author = authorClass.text();
             String publisher = publisherClass.text();
+            String image = imageClass.attr("src");
             String publicationDate = publicationDateClass.text();
             String title = titleTag.replaceFirst("-.*", "");
             ranking++;
@@ -58,8 +60,8 @@ public class YPBookService {
                     .ranking(ranking)
                     .bookname(title)
                     .author(author)
-                    .publisher(publisher)
-                    .publicationdate(publicationDate)
+                    .publisher(publisher).publicationdate(publicationDate)
+                    .image(image)
                     .build();
             list.add(dto);
         }
