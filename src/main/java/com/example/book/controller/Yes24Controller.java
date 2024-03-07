@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-//@Controller
 @Api(tags = {"Yes24 정보를 제공하는 Controller"})
 @RestController
 @RequiredArgsConstructor
@@ -26,29 +25,14 @@ import java.util.concurrent.Future;
 public class Yes24Controller {
 
     private final Yes24Service service;
-    private final AladinService service2;
 
     //restController
     @ApiOperation(value = "yes24 top50위 리스트")
     @GetMapping("/yes24")
-    public void yes24Ranking(Model model) throws IOException {
-        List<Yes24Dto> list = service.getYes24Top50();
-        model.addAttribute("list", list);
+    public List<Yes24Dto> yes24Ranking() throws IOException {
+        return service.getYes24Top50();
     }
 
-    @GetMapping("/aladin")
-    public void aladinRanking(Model model) throws IOException {
-        List<AladinDto> list = service2.getAladinTop50();
-        model.addAttribute("list", list);
-
-    }
-
-    //controller
-//    @GetMapping("/yes24")
-//    public void yes24Ranking(Model model) throws IOException {
-//        List<Yes24Dto> list = service.getYes24Top50();
-//        model.addAttribute("list", list);
-//    }
 
 
 }

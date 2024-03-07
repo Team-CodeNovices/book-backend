@@ -34,8 +34,8 @@ public class BookApiService {
     }
 
 
-    //받은 bookname으로 api 요청하고 Json을 java로 파싱해서 저장하는 메소드
-    public List<OurBookDto> getBookDetailsFromApi(String bookName) {
+    //받은 bookname으로 알라딘 api 저장하는 메소드
+    public List<OurBookDto> getAladinApi(String bookName) {
         // 외부 API의 엔드포인트 URL
         String apiUrl = "http://www.aladin.co.kr/ttb/api/ItemSearch.aspx?ttbkey=ttbamdshin1645001&QueryType=Title&MaxResults=1&SearchTarget=Book&output=js&Version=20131101&Query=" + bookName;
 
@@ -64,7 +64,6 @@ public class BookApiService {
                     String genre = categories[2];
                     apiData.setGenre(genre);
                     apiData.setPublisher(item.path("publisher").asText());
-                    apiData.setBookdetail(item.path("description").asText());
                     apiData.setPrice(item.path("priceStandard").asText());
                     apiData.setWritedate(item.path("pubDate").asText());
                     bookList.add(apiData);
@@ -86,7 +85,8 @@ public class BookApiService {
         return bookList;
     }
 
-    //api Data 받아서 업데이트 처리하는 메소드
+
+    //알라딘 api Data 받아서 업데이트 처리하는 메소드
     @Scheduled(cron = "0 0/60 * * * *")     //매 시간 정각
     public void updateBooksFromApi() {
         List<OurBookDto> nullList = dao.selectnull();
@@ -95,7 +95,7 @@ public class BookApiService {
         int nullCount = 0;
         String nullInfo = "정보없음";
         for (OurBookDto bookDto : nullList) {
-            List<OurBookDto> updatedBookDtoList = getBookDetailsFromApi(bookDto.getBookname());
+            List<OurBookDto> updatedBookDtoList = getAladinApi(bookDto.getBookname());
             // api 에서 받아온 정보가 없을 시 nullInfo 삽입
             if (updatedBookDtoList.isEmpty()) {
                 bookDto.setImage(nullInfo);
@@ -106,7 +106,7 @@ public class BookApiService {
                 bookDto.setBookdetail(nullInfo);
                 bookDto.setPrice(nullInfo);
                 bookDto.setWritedate(nullInfo);
-                bookDto.setMainkeyword(nullInfo);
+                bookDto.setMainkeyword(null);
                 updatedList.add(bookDto);
                 nullCount++;
                 log.info(nullCount + "번");
@@ -118,7 +118,7 @@ public class BookApiService {
                     bookDto.setAuthor(updatedBookDto.getAuthor());
                     bookDto.setPublisher(updatedBookDto.getPublisher());
                     bookDto.setGenre(updatedBookDto.getGenre());
-                    bookDto.setBookdetail(updatedBookDto.getBookdetail());
+                    bookDto.setBookdetail(null);
                     bookDto.setPrice(updatedBookDto.getPrice());
                     bookDto.setWritedate(updatedBookDto.getWritedate());
                     bookDto.setMainkeyword(null);
@@ -138,7 +138,7 @@ public class BookApiService {
     // OpenAI 요청을 보내는 메소드
     public OpenAIResponse sendOpenAIRequest(String bookName) {
         String OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
-        String OPENAI_API_KEY = "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";
+        String OPENAI_API_KEY = "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";
 
         RestTemplate restTemplate = new RestTemplate();
 
@@ -179,14 +179,18 @@ public class BookApiService {
         }
 
     }
-
-//    @Scheduled(cron = "0 0/60 * * * *") // 매 시간 정각
+    
+// chat api로 관련 키워드 저장하는 메소드
+//@Scheduled(cron = "0 * * * * *") // 1분마다 작동
 public void keywordFromApi() {
     List<OurBookDto> nullList = dao.keywordnull();
+    int count =0;
+    boolean check = true;
     if(!nullList.isEmpty()) {
 
     List<OurBookDto> updatedList = new ArrayList<>();
     for (OurBookDto bookDto : nullList) {
+        count++;
         String bookName = bookDto.getBookname();
         OpenAIResponse response = sendOpenAIRequest(bookName);
         if (response != null) {
@@ -194,14 +198,21 @@ public void keywordFromApi() {
             updatedList.add(bookDto);
         } else {
             log.error("OpenAI 요청 실패: bookName=" + bookName);
+            check=false;
+        }
+        if(count >=3){
+            break;
         }
     }
+    if(check){
     dao.updateMainKeyword(updatedList);
     log.info("메인 키워드 업데이트 완료");
+    }
     }else {
     log.info("비어있는 키워드가 없어 종료합니다.");
     }
 }
+
 
 
 

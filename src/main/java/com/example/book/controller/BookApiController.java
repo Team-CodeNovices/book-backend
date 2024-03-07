@@ -22,7 +22,7 @@ public class BookApiController {
     @GetMapping("/bookapi")
     public void updateFromApi() throws IOException {
         service.updateBooksFromApi();
-        service.keywordFromApi();
+//        service.keywordFromApi();
     }
 
 

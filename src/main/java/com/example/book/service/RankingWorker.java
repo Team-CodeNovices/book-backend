@@ -115,7 +115,6 @@ public class RankingWorker {
 
             // 전체 도서 중에서 이미 존재하지 않는 도서는 list2에 추가
             String finalBookNameText = yes24Dto.getBookname();
-//            log.info(finalBookNameText);
             boolean exist = existBooks.stream().anyMatch(existingBook -> existingBook.getBookname().equals(finalBookNameText));
             if (!exist) {
                 OurBookDto dto2 = OurBookDto.builder()
@@ -138,15 +137,15 @@ public class RankingWorker {
     public static List<Yes24Dto> getYes24DataNew(int startP, int stopP) throws IOException {
         String baseUrl = "https://www.yes24.com/";
         List<Yes24Dto> list = new ArrayList<>();
-        int totalpage = stopP; // 999위까지 페이지 갯수
+        int totalpage = stopP;
         for (int page = startP; page <= totalpage; page++) {
             String pageUrl = baseUrl + "/Product/Category/BestSeller?categoryNumber=001&pageNumber=" + page + "&pageSize=120";
             Document doc = Jsoup.connect(pageUrl).get();
             Elements goods = doc.select("[data-goods-no]");
 
             for (Element good : goods) {
-//                String dataGoodsNo = good.attr("data-goods-no");
                 String gdName = good.select(".gd_name").text();
+                String image = good.select(".lazy").attr("data-original");
                 Elements yesBs = good.select(".yes_b"); // 가격과 평점 모두 포함된 요소
                 String price = yesBs.stream()
                         .filter(e -> e.text().contains("원")) // "원"을 포함하는 텍스트를 가진 요소만 필터링
@@ -157,10 +156,10 @@ public class RankingWorker {
                 String infoPub = good.select(".info_pub").text();
                 String infoDate = good.select(".info_date").text();
                 String rank = good.select(".ico.rank").text();
-                // log.info(gdName + price + infoAuth + infoPub);
 
                 Yes24Dto dto = new Yes24Dto(
                         Integer.parseInt(rank),
+                        image,
                         gdName,
                         infoAuth,
                         infoPub,
