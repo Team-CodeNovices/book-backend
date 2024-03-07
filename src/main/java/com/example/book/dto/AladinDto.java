@@ -11,6 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class AladinDto extends OurBookDto{
     private int ranking;
+    private String image;
     private String bookname;
     private String author;
     private String publisher;

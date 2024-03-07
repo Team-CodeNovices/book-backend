@@ -20,18 +20,18 @@ public class OurBookService {
     private final Yes24Service service;
     private final AladinService service2;
 
-    
+
     //ourbook 리스트 불러오기
     public List<OurBookDto> selectlist() throws IOException {
         return dao.select();
     }
-  
+
     //yes24 전체 데이터 불러오기
     public List<Yes24Dto> yes24All() throws IOException {
         List<Yes24Dto> yesAll =  service.getYes24Top50();
         return  yesAll;
     }
-    
+
     //알라딘 전체 데이터 불러오기
     public List<AladinDto> aladinAll() throws IOException {
         List<AladinDto> aladinAll = service2.getAladinTop50();

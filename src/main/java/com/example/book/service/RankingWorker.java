@@ -132,7 +132,7 @@ public class RankingWorker {
             log.info("추가된 책이 없습니다.");
         }
     }
-    
+
     //에스 24데이터 가져오는 메소드
     public static List<Yes24Dto> getYes24DataNew(int startP, int stopP) throws IOException {
         String baseUrl = "https://www.yes24.com/";
