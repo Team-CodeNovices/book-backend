@@ -35,11 +35,14 @@
         <foreach collection="list" item="book" separator=";"  >
             UPDATE ourBook
             SET
+            link = #{book.link},
             image = #{book.image},
             author = #{book.author},
             publisher = #{book.publisher},
             genre = #{book.genre},
+            contents = #{book.contents},
             bookdetail = #{book.bookdetail},
+            authordetail = #{book.authordetail},
             price = #{book.price},
             writedate = #{book.writedate},
             mainkeyword = #{book.mainkeyword}

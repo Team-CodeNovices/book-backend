@@ -51,7 +51,7 @@ public class RankingWorker {
                 // 실제 구조에 맞게 선택자를 조정해야 할 수 있습니다.
                 Element infoElement = bookBox.selectFirst(".bo3").parent().nextElementSibling(); // 가정: 작가 및 출판사 정보가 bo3의 부모 요소의 다음 형제 요소에 위치
                 String authorAndPublisher = infoElement.text(); // 작가 및 출판사 정보 추출
-
+                String image = bookBox.select(".front_cover").attr("src");
                 // 작가 및 출판사 정보 분리 (실제 페이지 구조에 따라 다를 수 있음)
                 String[] parts = authorAndPublisher.split("\\|"); // "|"를 구분자로 사용하여 분리
                 String author = parts.length > 0 ? parts[0].trim() : ""; // 첫 번째 부분을 작가 정보로 사용
@@ -61,6 +61,7 @@ public class RankingWorker {
 
                 AladinDto dto = new AladinDto(
                         ranking,
+                        image,
                         bookTitle,
                         author,
                         publisher,
@@ -138,12 +139,14 @@ public class RankingWorker {
         String baseUrl = "https://www.yes24.com/";
         List<Yes24Dto> list = new ArrayList<>();
         int totalpage = stopP;
+        int count = 0;
         for (int page = startP; page <= totalpage; page++) {
             String pageUrl = baseUrl + "/Product/Category/BestSeller?categoryNumber=001&pageNumber=" + page + "&pageSize=120";
             Document doc = Jsoup.connect(pageUrl).get();
             Elements goods = doc.select("[data-goods-no]");
 
             for (Element good : goods) {
+                count++;
                 String gdName = good.select(".gd_name").text();
                 String image = good.select(".lazy").attr("data-original");
                 Elements yesBs = good.select(".yes_b"); // 가격과 평점 모두 포함된 요소
@@ -158,7 +161,7 @@ public class RankingWorker {
                 String rank = good.select(".ico.rank").text();
 
                 Yes24Dto dto = new Yes24Dto(
-                        Integer.parseInt(rank),
+                        count,
                         image,
                         gdName,
                         infoAuth,
