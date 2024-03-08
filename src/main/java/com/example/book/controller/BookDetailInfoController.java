@@ -1,7 +1,8 @@
 package com.example.book.controller;
 
+
 import com.example.book.dto.OurBookDto;
-import com.example.book.service.OurBookService;
+import com.example.book.service.BookDetailInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -11,18 +12,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.util.List;
+
 @RestController
-@Api(tags = {"OurBook 정보를 제공하는 Controller"})
+@Api(tags = {"책 상세내용 API"})
 @RequiredArgsConstructor
-@RequestMapping("/ourbook")
+@RequestMapping("/detail")
+public class BookDetailInfoController {
 
-//전체 리스트 보기
-public class OurBookController {
-    private final OurBookService book;
-    @ApiOperation(value = "OurBook 전체 리스트")
-    @GetMapping("/all")
-    public List<OurBookDto> selectList() throws IOException {
-        return book.selectlist();
+    private final BookDetailInfo detail;
+
+    @ApiOperation(value = "책 상세내용")
+    @GetMapping("/book")
+    public List<OurBookDto> Bookdetailinfo(String bookname) throws IOException{
+        return detail.Bookdetailinfo(bookname);
     }
-
 }

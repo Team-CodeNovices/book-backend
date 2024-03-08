@@ -2,6 +2,7 @@ package com.example.book.dao;
 
 import com.example.book.dto.OurBookDto;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -27,6 +28,10 @@ public interface OurBookMapper {
     //메인키워드 업데이트
     void updateMainKeyword(List<OurBookDto> nullList);
 
+    //키워드 검색
+    List<OurBookDto> searchKeyword(@Param("keyword") String keyword);
+
+    List<OurBookDto> bookdetailinfo(String bookname);
 
 
 }
