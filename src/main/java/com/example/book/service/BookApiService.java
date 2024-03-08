@@ -8,6 +8,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -15,7 +18,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import javax.lang.model.util.Elements;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -87,54 +95,149 @@ public class BookApiService {
 
 
     //알라딘 api Data 받아서 업데이트 처리하는 메소드
-    @Scheduled(cron = "0 0/60 * * * *")     //매 시간 정각
-    public void updateBooksFromApi() {
+//    @Scheduled(cron = "0 0/60 * * * *")     //매 시간 정각
+    public void updateBooksFromApi() throws IOException {
         List<OurBookDto> nullList = dao.selectnull();
         if (!nullList.isEmpty()) {
-        List<OurBookDto> updatedList = new ArrayList<>();
-        int nullCount = 0;
-        String nullInfo = "정보없음";
-        for (OurBookDto bookDto : nullList) {
-            List<OurBookDto> updatedBookDtoList = getAladinApi(bookDto.getBookname());
-            // api 에서 받아온 정보가 없을 시 nullInfo 삽입
-            if (updatedBookDtoList.isEmpty()) {
-                bookDto.setImage(nullInfo);
-                bookDto.setBookname(bookDto.getBookname());
-                bookDto.setAuthor(nullInfo);
-                bookDto.setPublisher(nullInfo);
-                bookDto.setGenre(nullInfo);
-                bookDto.setBookdetail(nullInfo);
-                bookDto.setPrice(nullInfo);
-                bookDto.setWritedate(nullInfo);
-                bookDto.setMainkeyword(null);
-                updatedList.add(bookDto);
-                nullCount++;
-                log.info(nullCount + "번");
-            } else {
-                // API에서 가져온 정보로 기존의 도서 정보 업데이트
-                for (OurBookDto updatedBookDto : updatedBookDtoList) {
-                    bookDto.setImage(updatedBookDto.getImage());
-                    bookDto.setBookname(bookDto.getBookname());
-                    bookDto.setAuthor(updatedBookDto.getAuthor());
-                    bookDto.setPublisher(updatedBookDto.getPublisher());
-                    bookDto.setGenre(updatedBookDto.getGenre());
-                    bookDto.setBookdetail(null);
-                    bookDto.setPrice(updatedBookDto.getPrice());
-                    bookDto.setWritedate(updatedBookDto.getWritedate());
-                    bookDto.setMainkeyword(null);
-                    updatedList.add(bookDto); // 수정된 정보를 새로운 리스트에 추가
-                    log.info("책 정보 업데이트 완료. bookname: " + bookDto.getBookname());
+            List<OurBookDto> updatedList = new ArrayList<>();
+            int nullCount = 0;
+            String nullInfo = "정보없음";
+            for (OurBookDto bookDto : nullList) {
+                List<OurBookDto> updatedBookDtoList = getNaverApi(bookDto.getBookname());
+                if (updatedBookDtoList.isEmpty()) {
+                    OurBookDto updatedBookDto = new OurBookDto(); // 새로운 객체 생성
+                    updatedBookDto.setLink(nullInfo);
+                    updatedBookDto.setImage(nullInfo);
+                    updatedBookDto.setBookname(bookDto.getBookname());
+                    updatedBookDto.setAuthor(nullInfo);
+                    updatedBookDto.setPublisher(nullInfo);
+                    updatedBookDto.setGenre(nullInfo);
+                    updatedBookDto.setContents(nullInfo);
+                    updatedBookDto.setBookdetail(nullInfo);
+                    updatedBookDto.setAuthordetail(nullInfo);
+                    updatedBookDto.setPrice(nullInfo);
+                    updatedBookDto.setWritedate(nullInfo);
+                    updatedBookDto.setMainkeyword(nullInfo);
+                    updatedList.add(updatedBookDto);
+                    nullCount++;
+                    log.info(nullCount + "번");
+                } else {
+                    for (OurBookDto updatedBookDto : updatedBookDtoList) {
+                        List<OurBookDto> infoList = getNaverCrawling(updatedBookDto.getLink());
+                        if (!infoList.isEmpty()) {
+                            OurBookDto infoDto = infoList.get(0);
+                            OurBookDto updatedDto = new OurBookDto(); // 새로운 객체 생성
+                            updatedDto.setLink(updatedBookDto.getLink());
+                            updatedDto.setImage(updatedBookDto.getImage());
+                            updatedDto.setBookname(bookDto.getBookname());
+                            updatedDto.setAuthor(updatedBookDto.getAuthor());
+                            updatedDto.setPublisher(updatedBookDto.getPublisher());
+                            updatedDto.setGenre(infoDto.getGenre());
+                            updatedDto.setContents(infoDto.getContents());
+                            updatedDto.setBookdetail(updatedBookDto.getBookdetail());
+                            updatedDto.setAuthordetail(infoDto.getAuthordetail());
+                            updatedDto.setPrice(updatedBookDto.getPrice());
+                            updatedDto.setWritedate(updatedBookDto.getWritedate());
+                            updatedDto.setMainkeyword(null);
+                            updatedList.add(updatedDto);
+                            log.info("책 정보 업데이트 완료. bookname: " + bookDto.getBookname());
+                        }
+                    }
                 }
             }
-        }
-        dao.updateBooksByList(nullList);
-        // 업데이트된 책 정보를 데이터베이스에 업데이트
-        log.info(nullCount + "개를 제외한" + "업데이트 완료!!");
-        }else{
-        log.info("업데이트할 리스트가 없어 종료합니다.");
+            dao.updateBooksByList(updatedList);
+            log.info(nullCount + "개를 제외한" + "업데이트 완료!!");
+        } else {
+            log.info("업데이트할 리스트가 없어 종료합니다.");
         }
     }
 
+
+    //네이버 크롤링하는 메소드
+    public static List<OurBookDto> getNaverCrawling(String link) throws IOException {
+        Document doc = Jsoup.connect(link).get();
+        List<OurBookDto> list = new ArrayList<>();
+
+        Element genreElement = doc.getElementsByAttributeValue("class", "bookCatalogTop_category__LIOY2").last();
+        String genre = genreElement != null ? genreElement.text() : "정보 없음";
+
+        // 목차
+        Element contentsElement = doc.getElementsByAttributeValue("class", "infoItem_data_text__bUgVI").last();
+        String contents = contentsElement != null ? contentsElement.text() : "정보 없음";
+
+        // 저자 소개
+        Element authorDetailElement = doc.getElementsByAttributeValue("class", "authorIntroduction_introduce_text__RYZDj").first();
+        String authorDetail = authorDetailElement != null ? authorDetailElement.text() : "정보 없음";
+
+        // OurBookDto 객체에 정보 저장
+        OurBookDto bookDto = new OurBookDto();
+        bookDto.setGenre(genre);
+        bookDto.setContents(contents);
+        bookDto.setAuthordetail(authorDetail);
+
+        list.add(bookDto);
+
+        return list;
+    }
+
+    //네이버 api 받아오는 메소드
+    public List<OurBookDto> getNaverApi(String bookName) {
+        // 외부 API의 엔드포인트 URL
+        String apiUrl = "https://openapi.naver.com/v1/search/book.json?query=" + bookName;
+
+        // REST 요청을 보내기 위한 RestTemplate 객체 생성
+        RestTemplate restTemplate = new RestTemplate();
+
+        // HTTP 요청 헤더 설정
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-Naver-Client-Id", "D1KnynlhJCHw7z4BqRcI");
+        headers.set("X-Naver-Client-Secret", "4xg4h0hmJe");
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        // API에 GET 요청을 보내고 JSON 형식으로 응답을 받아옴
+        ResponseEntity<String> responseEntity = restTemplate.exchange(apiUrl, HttpMethod.GET, entity, String.class);
+        String jsonResponse = responseEntity.getBody();
+
+        // JSON 응답을 분석하여 필요한 필드 추출
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<OurBookDto> bookList = new ArrayList<>();
+        try {
+            JsonNode root = objectMapper.readTree(jsonResponse);
+            JsonNode items = root.path("items");
+
+            for (JsonNode item : items) {
+                OurBookDto apiData = new OurBookDto();
+                apiData.setLink(item.path("link").asText());
+                apiData.setImage(item.path("image").asText());
+                apiData.setAuthor(item.path("author").asText());
+                apiData.setPublisher(item.path("publisher").asText());
+                apiData.setBookdetail(item.path("description").asText());
+                apiData.setPrice(item.path("discount").asText());
+                apiData.setWritedate(item.path("pubdate").asText());
+                bookList.add(apiData);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            OurBookDto apiData = new OurBookDto();
+            apiData.setLink("파싱 실패");
+            apiData.setImage("파싱 실패");
+            apiData.setAuthor("파싱 실패");
+            apiData.setPublisher("파싱 실패");
+            apiData.setBookdetail("파싱 실패");
+            apiData.setPrice("파싱 실패");
+            apiData.setWritedate("파싱 실패");
+            bookList.add(apiData);
+        }
+        return bookList;
+    }
+
+
+
+
+
+
+    
     // OpenAI 요청을 보내는 메소드
     public OpenAIResponse sendOpenAIRequest(String bookName) {
         String OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
