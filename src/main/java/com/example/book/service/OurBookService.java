@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -37,7 +38,14 @@ public class OurBookService {
         List<AladinDto> aladinAll = service2.getAladinTop50();
         return  aladinAll;
     }
-
+    //키워드 검색
+    public List<OurBookDto> searchByKeyword(String keyword) throws IOException {
+        keyword = keyword.replace("\\s","");
+        if (keyword.length() < 2){
+            return new ArrayList<>();
+        }
+        return dao.searchKeyword(keyword);
+    }
 
 //    @Scheduled(cron = "0 */10 * * * *")
 //    public List<OurBookDto> mergeData() throws IOException {

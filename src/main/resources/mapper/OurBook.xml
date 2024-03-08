@@ -56,5 +56,14 @@
         </foreach>
     </update>
 
+    <select id="searchKeyword" resultType="OurBookDto">
+        SELECT * FROM ourBook WHERE bookdetail LIKE CONCAT('%', #{keyword}, '%')
+                                 OR genre LIKE CONCAT('%', #{keyword}, '%')
+                                 OR bookname LIKE CONCAT('%', #{keyword}, '%')
+    </select>
+    
+    <select id="bookdetailinfo" resultType="OurBookDto">
+        select *  from ourBook Where bookname = #{bookname}
+    </select>
 
 </mapper>

@@ -51,7 +51,7 @@ public class RankingWorker {
                 // 실제 구조에 맞게 선택자를 조정해야 할 수 있습니다.
                 Element infoElement = bookBox.selectFirst(".bo3").parent().nextElementSibling(); // 가정: 작가 및 출판사 정보가 bo3의 부모 요소의 다음 형제 요소에 위치
                 String authorAndPublisher = infoElement.text(); // 작가 및 출판사 정보 추출
-
+                String image = bookBox.select(".front_cover").attr("src");
                 // 작가 및 출판사 정보 분리 (실제 페이지 구조에 따라 다를 수 있음)
                 String[] parts = authorAndPublisher.split("\\|"); // "|"를 구분자로 사용하여 분리
                 String author = parts.length > 0 ? parts[0].trim() : ""; // 첫 번째 부분을 작가 정보로 사용
@@ -61,6 +61,7 @@ public class RankingWorker {
 
                 AladinDto dto = new AladinDto(
                         ranking,
+                        image,
                         bookTitle,
                         author,
                         publisher,
