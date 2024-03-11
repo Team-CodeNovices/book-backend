@@ -148,6 +148,9 @@ public class RankingWorker {
             for (Element good : goods) {
                 count++;
                 String gdName = good.select(".gd_name").text();
+                if (gdName == null || gdName.isEmpty()) {
+                    gdName = "19세 도서";
+                }
                 String image = good.select(".lazy").attr("data-original");
                 Elements yesBs = good.select(".yes_b"); // 가격과 평점 모두 포함된 요소
                 String price = yesBs.stream()
