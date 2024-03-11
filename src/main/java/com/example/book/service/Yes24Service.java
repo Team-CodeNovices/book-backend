@@ -35,6 +35,9 @@ public class Yes24Service {
                     break;
                 }
                 String gdName = good.select(".gd_name").text();
+                if (gdName == null || gdName.isEmpty()) {
+                    gdName = "19세 도서";
+                }
                 String image = good.select(".lazy").attr("data-original");
                 String price = good.select(".yes_b").text().split(" ")[0];
                 String infoAuth = good.select(".info_auth").text();

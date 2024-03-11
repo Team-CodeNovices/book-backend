@@ -24,7 +24,9 @@
 
 
     <select id="selectnull" resultType="OurBookDto">
-        select * from ourBook where bookdetail is null
+        SELECT *
+        FROM ourBook
+        WHERE bookdetail IS NULL AND bookname != '19세 도서';
     </select>
 
     <select id="keywordnull" resultType="OurBookDto">
@@ -49,6 +51,7 @@
             WHERE bookname = #{book.bookname}
         </foreach>
     </update>
+
 
     <update id="updateMainKeyword" parameterType="java.util.List">
         <foreach collection="list" item="book" separator=";"  >
