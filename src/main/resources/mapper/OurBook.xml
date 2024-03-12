@@ -4,16 +4,10 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.book.dao.OurBookMapper">
     <insert id="insert" parameterType="java.util.List">
-        INSERT INTO OurBook (bookname, author, publisher, genre, bookdetail , price, writedate) VALUES
+        INSERT INTO OurBook (bookname) VALUES
         <foreach collection="list" item="item" separator="," >
             (
-            #{item.bookname},
-            #{item.author},
-            #{item.publisher},
-            #{item.genre},
-            #{item.bookdetail},
-            #{item.price},
-            #{item.writedate}
+            #{item.bookname}
             )
         </foreach>
     </insert>
@@ -26,7 +20,19 @@
     <select id="selectnull" resultType="OurBookDto">
         SELECT *
         FROM ourBook
-        WHERE bookdetail IS NULL AND bookname != '19세 도서';
+        WHERE
+            (link IS NULL OR link = '') OR
+            (image IS NULL OR image = '') OR
+            (author IS NULL OR author = '') OR
+            (publisher IS NULL OR publisher = '') OR
+            (genre IS NULL OR genre = '') OR
+            (contents IS NULL OR contents = '') OR
+            (bookdetail IS NULL OR bookdetail = '') OR
+            (authordetail IS NULL OR authordetail = '') OR
+            (price IS NULL OR price = '') OR
+                (writedate IS NULL OR writedate = '') AND
+                bookname != '19세 도서';
+
     </select>
 
     <select id="keywordnull" resultType="OurBookDto">

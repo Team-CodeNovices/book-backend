@@ -39,35 +39,13 @@ public class BookApiService {
     public void updateBooksFromApi() throws IOException {
         List<OurBookDto> nullList = dao.selectnull();
         if (!nullList.isEmpty()) {
-//            List<OurBookDto> updatedList = new ArrayList<>();
-            int nullCount = 0;
-            String nullInfo = "정보없음";
             for (OurBookDto bookDto : nullList) {
                 List<OurBookDto> updatedBookDtoList = getNaverApi(bookDto.getBookname());
-                if (updatedBookDtoList.isEmpty()) {
-                    OurBookDto updatedBookDto = new OurBookDto(); // 새로운 객체 생성
-                    updatedBookDto.setLink(nullInfo);
-                    updatedBookDto.setImage(nullInfo);
-                    updatedBookDto.setBookname(bookDto.getBookname());
-                    updatedBookDto.setAuthor(nullInfo);
-                    updatedBookDto.setPublisher(nullInfo);
-                    updatedBookDto.setGenre(nullInfo);
-                    updatedBookDto.setContents(nullInfo);
-                    updatedBookDto.setBookdetail(nullInfo);
-                    updatedBookDto.setAuthordetail(nullInfo);
-                    updatedBookDto.setPrice(nullInfo);
-                    updatedBookDto.setWritedate(nullInfo);
-                    updatedBookDto.setMainkeyword(nullInfo);
-//                    updatedList.add(updatedBookDto);
-                    dao.updateBooksByList(Collections.singletonList(updatedBookDto));
-                    nullCount++;
-                    log.info(nullCount + "번");
-                } else {
                     for (OurBookDto updatedBookDto : updatedBookDtoList) {
                         List<OurBookDto> infoList = getNaverCrawling(updatedBookDto.getLink());
                         if (!infoList.isEmpty()) {
                             OurBookDto infoDto = infoList.get(0);
-                            OurBookDto updatedDto = new OurBookDto(); // 새로운 객체 생성
+                            OurBookDto updatedDto = new OurBookDto();
                             updatedDto.setLink(updatedBookDto.getLink());
                             updatedDto.setImage(updatedBookDto.getImage());
                             updatedDto.setBookname(bookDto.getBookname());
@@ -80,15 +58,13 @@ public class BookApiService {
                             updatedDto.setPrice(updatedBookDto.getPrice());
                             updatedDto.setWritedate(updatedBookDto.getWritedate());
                             updatedDto.setMainkeyword(null);
-//                            updatedList.add(updatedDto);
                             dao.updateBooksByList(Collections.singletonList(updatedDto));
                             log.info("책 정보 업데이트 완료. bookname: " + bookDto.getBookname());
                         }
                     }
-                }
+
             }
-//            dao.updateBooksByList(updatedList);
-            log.info(nullCount + "개를 제외한" + "업데이트 완료!!");
+            log.info("업데이트 완료!!");
         } else {
             log.info("업데이트할 리스트가 없어 종료합니다.");
         }
@@ -150,13 +126,28 @@ public class BookApiService {
 
             for (JsonNode item : items) {
                 OurBookDto apiData = new OurBookDto();
-                apiData.setLink(item.path("link").asText());
-                apiData.setImage(item.path("image").asText());
-                apiData.setAuthor(item.path("author").asText());
-                apiData.setPublisher(item.path("publisher").asText());
-                apiData.setBookdetail(item.path("description").asText());
-                apiData.setPrice(item.path("discount").asText());
-                apiData.setWritedate(item.path("pubdate").asText());
+                String link = item.path("link").asText();
+                apiData.setLink(link != null && !link.isEmpty() ? link : "정보없음");
+
+                String image = item.path("image").asText();
+                apiData.setImage(image != null && !image.isEmpty() ? image : "정보없음");
+
+                String author = item.path("author").asText().replace("^", ",");
+
+                apiData.setAuthor(author != null && !author.isEmpty() ? author : "정보없음");
+
+                String publisher = item.path("publisher").asText();
+                apiData.setPublisher(publisher != null && !publisher.isEmpty() ? publisher : "정보없음");
+
+                String description = item.path("description").asText();
+                apiData.setBookdetail(description != null && !description.isEmpty() ? description : "정보없음");
+
+                String price = item.path("discount").asText();
+                apiData.setPrice(price != null && !price.isEmpty() ? price : "정보없음");
+
+                String pubdate = item.path("pubdate").asText();
+                apiData.setWritedate(pubdate != null && !pubdate.isEmpty() ? pubdate : "정보없음");
+
                 bookList.add(apiData);
             }
 
