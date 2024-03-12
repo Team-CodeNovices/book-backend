@@ -12,7 +12,6 @@ public interface OurBookMapper {
     //insert
     void insert(List<OurBookDto> dto);
 
-
     //ourbook 모든 데이터 보기
     List<OurBookDto> select();
     

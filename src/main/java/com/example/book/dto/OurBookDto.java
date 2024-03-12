@@ -12,33 +12,21 @@ import java.sql.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Builder(builderMethodName = "ourBookDtoBuilder")
 public class OurBookDto {
 
-    private String link;           //책 링크
-    private String image;           //이미지 링크
-    private String bookname;        //책이름
-    private String author;          //저자
-    private String publisher;       //출판사
-    private String genre;            //장르
+    private String link;                //책 링크
+    private String image;               //이미지 링크
+    private String bookname;            //책이름
+    private String author;              //저자
+    private String publisher;           //출판사
+    private String genre;               //장르
     private String contents;            //목차
-    private String bookdetail;       //상세내용
-    private String authordetail;     //저자소개
-    private String price;            //가격
-    private String writedate;        //출판일
-    private String mainkeyword;      //주요 키워드
+    private String bookdetail;          //상세내용
+    private String authordetail;        //저자소개
+    private String price;               //가격
+    private String writedate;           //출판일
+    private String mainkeyword;         //주요 키워드
 
-
-    @Builder(builderClassName = "OurBookBuilder") // 빌더 클래스의 이름을 명시적으로 지정
-    public OurBookDto(String image,String bookname,String author,String publisher,String bookdetail,String genre,String price,String writedate) {
-        this.image = image;
-        this.bookname = bookname;
-        this.author = author;
-        this.publisher = publisher;
-        this.bookdetail = bookdetail;
-        this.genre = genre;
-        this.price = price;
-        this.writedate = writedate;
-    }
-    
 
 }
