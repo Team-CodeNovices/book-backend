@@ -22,7 +22,7 @@ import java.util.List;
 public class SearchKeyWord {
 
     private final OurBookService book;
-    @GetMapping("/keword")
+    @GetMapping("/keyword")
     @ApiOperation(value = "키워드 검색")
     public ResponseEntity<List<OurBookDto>> searchByKeyword(@RequestParam String keyword) {
         try {
