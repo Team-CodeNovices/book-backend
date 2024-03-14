@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
@@ -23,7 +24,7 @@ public class BookDetailInfoController {
 
     @ApiOperation(value = "책 상세내용")
     @GetMapping("/book")
-    public List<OurBookDto> Bookdetailinfo(String bookname) throws IOException{
+    public List<OurBookDto> Bookdetailinfo(@RequestParam String bookname) throws IOException{
         return detail.Bookdetailinfo(bookname);
     }
 }
