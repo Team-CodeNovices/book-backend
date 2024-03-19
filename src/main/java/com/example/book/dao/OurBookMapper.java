@@ -15,6 +15,7 @@ public interface OurBookMapper {
     //ourbook 모든 데이터 보기
     List<OurBookDto> select();
 
+
     //매인키워드 데이터 보기
     List<OurBookDto> selectMainkeyword(String bookname);
 
@@ -35,7 +36,7 @@ public interface OurBookMapper {
 
     //업데이트 스케줄러
     void updateBooksByList(List<OurBookDto> nullList);
-    
+
     //메인키워드 업데이트
     void updateMainKeyword(List<OurBookDto> nullList);
 
