@@ -32,7 +32,7 @@ import java.util.*;
 public class BookApiService {
 
     private final OurBookMapper dao;
-
+    private int count = 0;  //횟수제한
 
     //네이버 api Data 받아서 업데이트 처리하는 메소드
     @Scheduled(cron = "0 0/60 * * * *")     //매 시간 정각
@@ -74,18 +74,19 @@ public class BookApiService {
     //네이버 크롤링하는 메소드
     public static List<OurBookDto> getNaverCrawling(String link) throws IOException {
         Document doc = Jsoup.connect(link).get();
+        Element element = doc.getElementById("book_section-info");
         List<OurBookDto> list = new ArrayList<>();
 
         //장르
-        Element genreElement = doc.getElementsByAttributeValue("class", "bookCatalogTop_category__LIOY2").last();
+        Element genreElement = doc.select("[class*=bookCatalogTop_category__]").last();
         String genre = (genreElement != null && !genreElement.text().isEmpty()) ? genreElement.text() : "정보 없음";
 
         // 목차
-        Element contentsElement = doc.getElementsByAttributeValue("class", "infoItem_data_text__bUgVI").last();
+        Element contentsElement = element.select("[class*=infoItem_info_item__]").last();
         String contents = (contentsElement != null && !contentsElement.text().isEmpty()) ? contentsElement.text() : "정보 없음";
 
         // 저자 소개
-        Element authorDetailElement = doc.getElementsByAttributeValue("class", "authorIntroduction_introduce_text__RYZDj").first();
+        Element authorDetailElement = element.select("[class*=authorIntroduction_introduce_text__]").first();
         String authorDetail = (authorDetailElement != null && !authorDetailElement.text().isEmpty()) ? authorDetailElement.text() : "정보 없음";
 
         // OurBookDto 객체에 정보 저장
@@ -166,8 +167,78 @@ public class BookApiService {
         return bookList;
     }
 
+    // OpenAI 요청을 보내는 메소드
+    public OpenAIResponse sendOpenAIRequest(String bookName) {
+        String OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
+        String OPENAI_API_KEY = "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";
 
-    //이전 알라딘 api
+        RestTemplate restTemplate = new RestTemplate();
+
+        // 요청 본문 생성
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("model", "gpt-3.5-turbo");
+        List<Map<String, String>> messages = new ArrayList<>();
+        Map<String, String> message = new HashMap<>();
+        message.put("role", "user");
+        message.put("content", bookName + "이 책에 관련된 관련 키워드 5개만 알려줘");
+        messages.add(message);
+        requestBody.put("messages", messages);
+        requestBody.put("temperature", 0.7);
+
+        // HTTP 요청을 위한 헤더 설정
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "Bearer " + OPENAI_API_KEY);
+
+        // HTTP 요청 보내기
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try {
+            ResponseEntity<String> responseEntity = restTemplate.exchange(
+                    OPENAI_API_URL, HttpMethod.POST, requestEntity, String.class);
+            JsonNode root = objectMapper.readTree(responseEntity.getBody());
+            String content = root.path("choices").get(0).get("message").get("content").asText();
+            OpenAIResponse openAIResponse = new OpenAIResponse();
+            openAIResponse.setText(content);
+            return openAIResponse;
+        } catch (HttpClientErrorException e) {
+            System.err.println("HTTP Client Error: " + e.getStatusCode() + " - " + e.getStatusText());
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
+    // chat api로 관련 키워드 저장하는 메소드
+    @Scheduled(cron = "0 */4 * * * *") // 4분마다 작동
+    public void keywordFromApi() {
+        if (count < 3) {
+            List<OurBookDto> nullList = dao.keywordnull();
+            if (!nullList.isEmpty()) {
+                for (int i = 0; i < 3 && count < 3; i++) {
+
+                        OurBookDto bookDto = nullList.get(count);
+                        String bookName = bookDto.getBookname();
+                        OpenAIResponse response = sendOpenAIRequest(bookName);
+                        if (response != null && response.getText() != null && !response.getText().isEmpty()) {
+                            bookDto.setMainkeyword(response.getText());
+                            dao.updateMainKeyword(Collections.singletonList(bookDto));
+                            log.info("메인 키워드 " + (count + 1) + "번째 업데이트 완료");
+                            count++;
+                        } else {
+                            log.error("OpenAI 요청 실패: bookName=" + bookName);
+                        }
+                }
+            }
+        } else {
+            log.info("작업 횟수 제한에 도달하여 작업을 종료합니다.");
+        }
+    }
+
+    //이전 알라딘 api(사용x)
     public List<OurBookDto> getAladinApi(String bookName) {
         // 외부 API의 엔드포인트 URL
         String apiUrl = "http://www.aladin.co.kr/ttb/api/ItemSearch.aspx?ttbkey=ttbamdshin1645001&QueryType=Title&MaxResults=1&SearchTarget=Book&output=js&Version=20131101&Query=" + bookName;
@@ -217,85 +288,5 @@ public class BookApiService {
         }
         return bookList;
     }
-
-
-    // OpenAI 요청을 보내는 메소드
-    public OpenAIResponse sendOpenAIRequest(String bookName) {
-        String OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
-        String OPENAI_API_KEY = "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";
-
-        RestTemplate restTemplate = new RestTemplate();
-
-        // 요청 본문 생성
-        Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("model", "gpt-3.5-turbo");
-        List<Map<String, String>> messages = new ArrayList<>();
-        Map<String, String> message = new HashMap<>();
-        message.put("role", "user");
-        message.put("content", bookName + "이 책에 관련된 관련 키워드 5개만 알려줘");
-        messages.add(message);
-        requestBody.put("messages", messages);
-        requestBody.put("temperature", 0.7);
-
-        // HTTP 요청을 위한 헤더 설정
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Authorization", "Bearer " + OPENAI_API_KEY);
-
-        // HTTP 요청 보내기
-        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        try {
-            ResponseEntity<String> responseEntity = restTemplate.exchange(
-                    OPENAI_API_URL, HttpMethod.POST, requestEntity, String.class);
-            JsonNode root = objectMapper.readTree(responseEntity.getBody());
-            String content = root.path("choices").get(0).get("message").get("content").asText();
-            OpenAIResponse openAIResponse = new OpenAIResponse();
-            openAIResponse.setText(content);
-            return openAIResponse;
-        } catch (HttpClientErrorException e) {
-            System.err.println("HTTP Client Error: " + e.getStatusCode() + " - " + e.getStatusText());
-            return null;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-
-    }
-
-    // chat api로 관련 키워드 저장하는 메소드
-//@Scheduled(cron = "0 * * * * *") // 1분마다 작동
-    public void keywordFromApi() {
-        List<OurBookDto> nullList = dao.keywordnull();
-        int count = 0;
-        boolean check = true;
-        if (!nullList.isEmpty()) {
-
-            List<OurBookDto> updatedList = new ArrayList<>();
-            for (OurBookDto bookDto : nullList) {
-                count++;
-                String bookName = bookDto.getBookname();
-                OpenAIResponse response = sendOpenAIRequest(bookName);
-                if (response != null) {
-                    bookDto.setMainkeyword(response.getText());
-                    updatedList.add(bookDto);
-                } else {
-                    log.error("OpenAI 요청 실패: bookName=" + bookName);
-                    check = false;
-                }
-                if (count >= 3) {
-                    break;
-                }
-            }
-            if (check) {
-                dao.updateMainKeyword(updatedList);
-                log.info("메인 키워드 업데이트 완료");
-            }
-        } else {
-            log.info("비어있는 키워드가 없어 종료합니다.");
-        }
-    }
-
 
 }

@@ -16,6 +16,28 @@
         select * from ourBook
     </select>
 
+    <select id="selectMainkeyword" resultType="OurBookDto">
+        select mainkeyword from ourBook where bookname = #{bookname} and mainkeyword is not null
+    </select>
+
+    <select id="selectAuthor" resultType="String">
+        select author from ourBook where bookname = #{bookname}
+    </select>
+
+    <select id="containKeyword" resultType="OurBookDto" parameterType="String">
+        SELECT * FROM ourBook
+        WHERE
+            bookname LIKE CONCAT('%', #{keyword}, '%')
+           OR genre LIKE CONCAT('%', #{keyword}, '%')
+           OR contents LIKE CONCAT('%', #{keyword}, '%')
+           OR bookdetail LIKE CONCAT('%', #{keyword}, '%')
+           OR authordetail LIKE CONCAT('%', #{keyword}, '%')
+    </select>
+
+    <select id="getRandomBooksByAuthor" parameterType="String" resultType="OurBookDto">
+        SELECT * FROM ourBook
+        WHERE author = #{author}
+    </select>
 
     <select id="selectnull" resultType="OurBookDto">
         SELECT *
