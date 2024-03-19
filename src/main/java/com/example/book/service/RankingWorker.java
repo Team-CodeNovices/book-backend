@@ -58,7 +58,7 @@ public class RankingWorker {
         for (RankingDto aladinDto : aladin) {
 
             String finalBookNameText = aladinDto.getBookname();
-            boolean exist = existBooks.stream().anyMatch(existingBook -> existingBook.getBookname().equals(finalBookNameText));
+            boolean exist = existBooks.stream().anyMatch(existingBook -> existingBook.getBookname().replaceAll("\\s", "").equals(finalBookNameText.replaceAll("\\s", "")));
             if (!exist) {
                 OurBookDto dto2 = OurBookDto.ourBookDtoBuilder().bookname(finalBookNameText).build();
                 list2.add(dto2);
@@ -111,7 +111,7 @@ public class RankingWorker {
         for (RankingDto yes24Dto : yes24) {
 
             String finalBookNameText = yes24Dto.getBookname();
-            boolean exist = existBooks.stream().anyMatch(existingBook -> existingBook.getBookname().equals(finalBookNameText));
+            boolean exist = existBooks.stream().anyMatch(existingBook -> existingBook.getBookname().replaceAll("\\s", "").equals(finalBookNameText.replaceAll("\\s", "")));
             if (!exist) {
                 OurBookDto dto2 = OurBookDto.ourBookDtoBuilder().bookname(finalBookNameText).build();
                 list2.add(dto2);
