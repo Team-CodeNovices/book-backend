@@ -22,7 +22,6 @@ public class BookApiController {
     @GetMapping("/bookapi")
     public void updateFromApi() throws IOException {
         service.updateBooksFromApi();
-//        service.getNaverApi("마흔에 읽는 쇼펜하우어");
 //        service.keywordFromApi();
     }
 

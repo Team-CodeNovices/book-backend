@@ -66,7 +66,7 @@ public class YPBookService {
 
         for (RankingDto ypDto : list) {
             String finalBookNameText = ypDto.getBookname();
-            boolean exist = existBooks.stream().anyMatch(existingBook -> existingBook.getBookname().equals(finalBookNameText));
+            boolean exist = existBooks.stream().anyMatch(existingBook -> existingBook.getBookname().replaceAll("\\s", "").equals(finalBookNameText.replaceAll("\\s", "")));
             if (!exist) {
                 OurBookDto dto2 = OurBookDto.ourBookDtoBuilder()
                         .bookname(finalBookNameText)
