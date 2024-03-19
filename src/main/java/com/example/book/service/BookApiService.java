@@ -198,7 +198,7 @@ public class BookApiService {
                     apiData.setGenre(genre);
                     apiData.setPublisher(item.path("publisher").asText());
                     apiData.setPrice(item.path("priceStandard").asText());
-                    apiData.setWritedate(item.path("pubDate").asText());
+                    apiData.setWritedate(item.path("pubDate").asText() );
                     bookList.add(apiData);
                 }
             }
