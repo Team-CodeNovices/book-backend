@@ -96,8 +96,17 @@
                                  OR bookname LIKE CONCAT('%', #{keyword}, '%')
     </select>
 
+    <select id="authorinfo" resultType="OurBookDto">
+        select * from ourBook where author LIKE CONCAT('%', #{author},'%')
+                                OR publisher LIKE CONCAT('%',#{publisher},'%')
+    </select>
+
+    <select id="publisherinfo" resultType="OurBookDto">
+        select * from ourBook where publisher LIKE CONCAT('%',#{publisher},'%')
+    </select>
+
     <select id="bookdetailinfo" resultType="OurBookDto">
-        SELECT * FROM ourBook WHERE LENGTH(bookname) >= 2 AND bookname LIKE CONCAT('%', #{bookname}, '%')
+        SELECT * FROM ourBook WHERE bookname LIKE CONCAT('%', #{bookname}, '%')
     </select>
 
 
