@@ -19,7 +19,7 @@ import java.util.List;
 @Api(tags = {"키워드 검색 API"})
 @RequiredArgsConstructor
 @RequestMapping("search")
-public class SearchKeyWord {
+public class SearchKeyWordController {
 
     private final OurBookService book;
     @GetMapping("/keyword")
