@@ -9,11 +9,13 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +27,6 @@ public class YPBookService {
     //영품문고 책정보 리스트 불러오고 이름 비교해서 OurBook테이블에 넣는 메소드
     public List<RankingDto> list() throws IOException {
         List<OurBookDto> existBooks = dao.select();
-        List<OurBookDto> list2 = new ArrayList<>();
         List<RankingDto> list = new ArrayList<>();
 
         Document doc = null;
@@ -39,18 +40,15 @@ public class YPBookService {
             String hrefValue = link.attr("href");
             String fullUrl = baseUrl + hrefValue;
             Document innerDocument = Jsoup.connect(fullUrl).get();
-            Elements titleClass = innerDocument.getElementsByClass("sm-title-in");
-            Elements authorClass = innerDocument.getElementsByAttributeValue("class", "author");
-            Elements publisherClass = innerDocument.getElementsByAttributeValue("class", "publisher");
-            Elements publicationDateClass = innerDocument.getElementsByAttributeValue("class", "publication-date");
             Element imageClass = innerDocument.select("div.sm-book span.cover img").get(0);
-            String titleTag = titleClass.select("h3").text();
-            String author = authorClass.text();
-            String publisher = publisherClass.text();
             String image = imageClass.attr("src");
-            String publicationDate = publicationDateClass.text();
+            Elements titleClass = innerDocument.getElementsByClass("sm-title-in");
+            String titleTag = titleClass.select("h3").text();
             String title = titleTag.replaceFirst("-.*", "").trim();
             title = title.split("\\(")[0].trim();
+            String author = innerDocument.getElementsByAttributeValue("class", "author").text();
+            String publisher = innerDocument.getElementsByAttributeValue("class", "publisher").text();
+            String publicationDate = innerDocument.getElementsByAttributeValue("class", "publication-date").text();
             ranking++;
 
             RankingDto dto = new RankingDto(
@@ -63,24 +61,28 @@ public class YPBookService {
             );
             list.add(dto);
         }
+        CompletableFuture.runAsync(() -> insertNewBooks(existBooks, list));
+        return list;
+    }
 
-        for (RankingDto ypDto : list) {
-            String finalBookNameText = ypDto.getBookname();
-            boolean exist = existBooks.stream().anyMatch(existingBook -> existingBook.getBookname().replaceAll("\\s", "").equals(finalBookNameText.replaceAll("\\s", "")));
+    //ourbook에 없는 데이터 insert 하는 메소드(영풍문고)
+    @Async
+    private void insertNewBooks(List<OurBookDto> existBooks, List<RankingDto> rankingList) {
+        List<OurBookDto> newBooks = new ArrayList<>();
+        for (RankingDto rankingDto : rankingList) {
+            String bookName = rankingDto.getBookname();
+            boolean exist = existBooks.stream().anyMatch(existingBook -> existingBook.getBookname().replaceAll("\\s", "").equals(bookName.replaceAll("\\s", "")));
             if (!exist) {
-                OurBookDto dto2 = OurBookDto.ourBookDtoBuilder()
-                        .bookname(finalBookNameText)
-                        .build();
-                list2.add(dto2);
+                OurBookDto newBook = OurBookDto.ourBookDtoBuilder().bookname(bookName).build();
+                newBooks.add(newBook);
             }
         }
-        if (!list2.isEmpty()) {
+        if (!newBooks.isEmpty()) {
             log.info("insert 시작 (영풍문고)");
-            dao.insert(list2);
+            dao.insert(newBooks);
             log.info("새로운 영풍문고 책 정보를 insert 하였습니다.");
         } else {
             log.info("추가된 책이 없습니다.");
         }
-        return list;
     }
 }
