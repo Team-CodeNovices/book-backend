@@ -74,7 +74,6 @@ public class BookApiService {
     //네이버 크롤링하는 메소드
     public static List<OurBookDto> getNaverCrawling(String link) throws IOException {
         Document doc = Jsoup.connect(link).get();
-        Element element = doc.getElementById("book_section-info");
         List<OurBookDto> list = new ArrayList<>();
 
         //장르
@@ -82,11 +81,11 @@ public class BookApiService {
         String genre = (genreElement != null && !genreElement.text().isEmpty()) ? genreElement.text() : "정보 없음";
 
         // 목차
-        Element contentsElement = element.select("[class*=infoItem_info_item__]").last();
+        Element contentsElement = doc.select("[class*=infoItem_data_text__]").last();
         String contents = (contentsElement != null && !contentsElement.text().isEmpty()) ? contentsElement.text() : "정보 없음";
 
         // 저자 소개
-        Element authorDetailElement = element.select("[class*=authorIntroduction_introduce_text__]").first();
+        Element authorDetailElement = doc.select("[class*=authorIntroduction_introduce_text__]").first();
         String authorDetail = (authorDetailElement != null && !authorDetailElement.text().isEmpty()) ? authorDetailElement.text() : "정보 없음";
 
         // OurBookDto 객체에 정보 저장
@@ -215,22 +214,22 @@ public class BookApiService {
     // chat api로 관련 키워드 저장하는 메소드
     @Scheduled(cron = "0 */4 * * * *") // 4분마다 작동
     public void keywordFromApi() {
+        count = 0;
         if (count < 3) {
             List<OurBookDto> nullList = dao.keywordnull();
             if (!nullList.isEmpty()) {
                 for (int i = 0; i < 3 && count < 3; i++) {
-
-                        OurBookDto bookDto = nullList.get(count);
-                        String bookName = bookDto.getBookname();
-                        OpenAIResponse response = sendOpenAIRequest(bookName);
-                        if (response != null && response.getText() != null && !response.getText().isEmpty()) {
-                            bookDto.setMainkeyword(response.getText());
-                            dao.updateMainKeyword(Collections.singletonList(bookDto));
-                            log.info("메인 키워드 " + (count + 1) + "번째 업데이트 완료");
-                            count++;
-                        } else {
-                            log.error("OpenAI 요청 실패: bookName=" + bookName);
-                        }
+                    OurBookDto bookDto = nullList.get(count);
+                    String bookName = bookDto.getBookname();
+                    OpenAIResponse response = sendOpenAIRequest(bookName);
+                    if (response != null && response.getText() != null && !response.getText().isEmpty()) {
+                        bookDto.setMainkeyword(response.getText());
+                        dao.updateMainKeyword(Collections.singletonList(bookDto));
+                        log.info("메인 키워드 " + (count + 1) + "번째 업데이트 완료");
+                    } else {
+                        log.error("OpenAI 요청 실패: bookName=" + bookName);
+                    }
+                    count++;
                 }
             }
         } else {
