@@ -45,5 +45,7 @@ public interface OurBookMapper {
 
     List<OurBookDto> bookdetailinfo(String bookname);
 
+    List<OurBookDto> authorinfo(String author);
 
+    List<OurBookDto> publisherinfo(String publisher);
 }
