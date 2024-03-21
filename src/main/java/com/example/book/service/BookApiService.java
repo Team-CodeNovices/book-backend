@@ -58,6 +58,7 @@ public class BookApiService {
                             updatedDto.setPrice(updatedBookDto.getPrice());
                             updatedDto.setWritedate(updatedBookDto.getWritedate());
                             updatedDto.setMainkeyword(null);
+                            updatedDto.setAssistkeyword(null);
                             dao.updateBooksByList(Collections.singletonList(updatedDto));
                             log.info("책 정보 업데이트 완료. bookname: " + bookDto.getBookname());
                         }

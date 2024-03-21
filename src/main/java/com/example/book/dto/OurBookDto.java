@@ -27,6 +27,7 @@ public class OurBookDto {
     private String price;               //가격
     private String writedate;           //출판일
     private String mainkeyword;         //주요 키워드
+    private String assistkeyword;       //어시스턴트 키워드
 
 
 }
