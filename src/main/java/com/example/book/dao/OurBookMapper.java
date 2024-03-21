@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface OurBookMapper {
@@ -15,6 +16,8 @@ public interface OurBookMapper {
     //ourbook 모든 데이터 보기
     List<OurBookDto> select();
 
+    //카테고리에 따른 정보
+    List<OurBookDto> selectCategory(Map<String, Object> params);
 
     //매인키워드 데이터 보기
     List<OurBookDto> selectMainkeyword(String bookname);
@@ -22,22 +25,16 @@ public interface OurBookMapper {
     //키워드가 포함된 책리스트
     List<OurBookDto> containKeyword(String keyword);
 
-    //장르에 따른 책리스트
-    List<OurBookDto> getRandomBooksByAuthor(String author);
-    
-    //장르 가져오기
+    //책의 저자 가져오기
     String selectAuthor(String bookname);
     
-    //detail null 인 목록 보기
+    //비어있는 목록 가져오기
     List<OurBookDto> selectnull();
 
-    //keyword null 인 목록 보기
-    List<OurBookDto> keywordnull();
-
-    //업데이트 스케줄러
+    //api 업데이트 스케줄러
     void updateBooksByList(List<OurBookDto> nullList);
 
-    //메인키워드 업데이트
+    //메인키워드 업데이트 스케줄러
     void updateMainKeyword(List<OurBookDto> nullList);
 
     //키워드 검색
@@ -48,4 +45,6 @@ public interface OurBookMapper {
     List<OurBookDto> authorinfo(String author);
 
     List<OurBookDto> publisherinfo(String publisher);
+
+
 }
