@@ -78,7 +78,8 @@
             authordetail = #{book.authordetail},
             price = #{book.price},
             writedate = #{book.writedate},
-            mainkeyword = #{book.mainkeyword}
+            mainkeyword = #{book.mainkeyword},
+            assistkeyword = #{book.assistkeyword}
             WHERE bookname = #{book.bookname}
         </foreach>
     </update>
