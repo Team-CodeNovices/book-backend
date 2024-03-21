@@ -27,7 +27,7 @@ public interface OurBookMapper {
 
     //책의 저자 가져오기
     String selectAuthor(String bookname);
-    
+
     //비어있는 목록 가져오기
     List<OurBookDto> selectnull();
 

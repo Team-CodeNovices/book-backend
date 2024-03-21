@@ -24,15 +24,5 @@ public class BookDetailInfoController {
     public List<OurBookDto> Bookdetailinfo(@PathVariable String bookname) throws IOException{
         return detail.Bookdetailinfo(bookname);
     }
-    @ApiOperation(value = "작가 책 정보")
-    @GetMapping("/author/{author}")
-    public List<OurBookDto> authorinfo(@PathVariable String author) throws IOException{
-        return detail.authorinfo(author);
-    }
 
-    @ApiOperation(value = "출판사 책 정보")
-    @GetMapping("/publisher/{publisher}")
-    public List<OurBookDto> publisherinfo(@PathVariable String publisher) throws IOException{
-        return detail.publisherinfo(publisher);
-    }
 }

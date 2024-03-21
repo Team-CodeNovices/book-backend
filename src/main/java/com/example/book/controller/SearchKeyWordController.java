@@ -1,7 +1,9 @@
+/*
 package com.example.book.controller;
 
 import com.example.book.dto.OurBookDto;
 import com.example.book.service.OurBookService;
+import com.example.book.service.SearchService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -18,21 +20,28 @@ import java.util.List;
 @RestController
 @Api(tags = {"키워드 검색 API"})
 @RequiredArgsConstructor
-@RequestMapping("search")
+@RequestMapping("/search")
 public class SearchKeyWordController {
 
-    private final OurBookService book;
+    private final SearchService book;
     @GetMapping("/keyword")
     @ApiOperation(value = "키워드 검색")
-    public ResponseEntity<List<OurBookDto>> searchByKeyword(@RequestParam String keyword) {
+
+    public ResponseEntity<List<OurBookDto>> searchBooks(
+            @RequestParam String searchType,
+            @RequestParam String keyword
+
+    ) {
         try {
-            List<OurBookDto> result = book.searchByKeyword(keyword);
+            List<OurBookDto> result = book.searchBooks(searchType, keyword);
             if (result.isEmpty()) {
                 return ResponseEntity.noContent().build(); // 검색 결과가 없을 때
             }
             return ResponseEntity.ok(result); // 검색 결과를 반환
-        } catch (IOException e) {
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 서버 오류 발생 시
         }
     }
+
 }
+*/
