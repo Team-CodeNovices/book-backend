@@ -169,7 +169,7 @@ public class BookApiService {
     // OpenAI 요청을 보내는 메소드
     public OpenAIResponse sendOpenAIRequest(String bookName) {
         String OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
-        String OPENAI_API_KEY = "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";
+        String OPENAI_API_KEY = "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";
 
         RestTemplate restTemplate = new RestTemplate();
 
@@ -216,7 +216,9 @@ public class BookApiService {
     public void keywordFromApi() {
         count = 0;
         if (count < 3) {
-            List<OurBookDto> nullList = dao.keywordnull();
+            Map<String, Object> params = new HashMap<>();
+            params.put("mainKeywordIsNull", true);
+            List<OurBookDto> nullList = dao.selectCategory(params);
             if (!nullList.isEmpty()) {
                 for (int i = 0; i < 3 && count < 3; i++) {
                     OurBookDto bookDto = nullList.get(count);

@@ -16,6 +16,18 @@
         select * from ourBook
     </select>
 
+    <select id="selectCategory" resultType="OurBookDto" parameterType="Map">
+        SELECT * FROM ourBook
+        <where>
+            <if test="author != null">
+                AND author = #{author}
+            </if>
+            <if test="mainKeywordIsNull">
+                AND mainkeyword IS NULL
+            </if>
+        </where>
+    </select>
+
     <select id="selectMainkeyword" resultType="OurBookDto">
         select mainkeyword from ourBook where bookname = #{bookname} and mainkeyword is not null
     </select>
@@ -34,11 +46,6 @@
            OR authordetail LIKE CONCAT('%', #{keyword}, '%')
     </select>
 
-    <select id="getRandomBooksByAuthor" parameterType="String" resultType="OurBookDto">
-        SELECT * FROM ourBook
-        WHERE author = #{author}
-    </select>
-
     <select id="selectnull" resultType="OurBookDto">
         SELECT *
         FROM ourBook
@@ -55,10 +62,6 @@
                 (writedate IS NULL OR writedate = '') AND
                 bookname != '19세 도서';
 
-    </select>
-
-    <select id="keywordnull" resultType="OurBookDto">
-        select * from ourBook where mainkeyword is null
     </select>
 
     <update id="updateBooksByList" parameterType="java.util.List">
@@ -80,7 +83,6 @@
         </foreach>
     </update>
 
-
     <update id="updateMainKeyword" parameterType="java.util.List">
         <foreach collection="list" item="book" separator=";"  >
             UPDATE ourBook
@@ -98,7 +100,7 @@
 
     <select id="authorinfo" resultType="OurBookDto">
         select * from ourBook where author LIKE CONCAT('%', #{author},'%')
-                                OR publisher LIKE CONCAT('%',#{publisher},'%')
+                                 OR publisher LIKE CONCAT('%',#{publisher},'%')
     </select>
 
     <select id="publisherinfo" resultType="OurBookDto">
@@ -108,6 +110,5 @@
     <select id="bookdetailinfo" resultType="OurBookDto">
         SELECT * FROM ourBook WHERE bookname LIKE CONCAT('%', #{bookname}, '%')
     </select>
-
 
 </mapper>

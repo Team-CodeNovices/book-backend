@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.awt.print.Book;
 import java.io.IOException;
 import java.util.*;
 
@@ -25,7 +24,7 @@ public class OurBookService {
 
 
     //ourbook 리스트 불러오기
-    public List<OurBookDto> selectlist() throws IOException {
+    public List<OurBookDto> selectlist() {
         return dao.select();
     }
 
@@ -67,7 +66,6 @@ public class OurBookService {
                 recommendedBooks = new ArrayList<>(); // 기본적으로 빈 리스트 반환 또는 오류 처리
                 break;
         }
-
         return recommendedBooks;
     }
 
@@ -83,18 +81,18 @@ public class OurBookService {
             List<String> keywords = new ArrayList<>();
             for (OurBookDto mainKeyword : keywordList) {
                 String keyword = mainKeyword.getMainkeyword();
-                String[] keywordParts = keyword.split("\\d+\\.\\s*");
+                String[] keywordParts = keyword.split("\\d+\\.\\s*,\\s*");
                 for (String part : keywordParts) {
                     if (!part.trim().isEmpty()) {
                         keywords.add(part.trim());
                     }
                 }
             }
-            
+
             for (String keyword : keywords) {
                 List<OurBookDto> booksWithKeyword = dao.containKeyword(keyword);
                 for (OurBookDto randomBook : booksWithKeyword) {
-                    if (!addedBookNames.contains(randomBook.getBookname()) && recommendedBooks.size() < 5) {    
+                    if (!addedBookNames.contains(randomBook.getBookname()) && recommendedBooks.size() < 5) {
                         RecommendBooksDto recommendBooksDto = new RecommendBooksDto();
                         recommendBooksDto.setImage(randomBook.getImage());
                         recommendBooksDto.setGenre(randomBook.getGenre());
@@ -105,9 +103,12 @@ public class OurBookService {
                     }
                 }
             }
+
         } else {    //정보가 비어있을 시 그책 저자의 관련 책들 추천
             String author = dao.selectAuthor(topBookName);
-            List<OurBookDto> randomBooks = dao.getRandomBooksByAuthor(author);
+            Map<String, Object> params = new HashMap<>();
+            params.put("author", author);
+            List<OurBookDto> randomBooks = dao.selectCategory(params);
             for (OurBookDto randomBook : randomBooks) {
                 if (!addedBookNames.contains(randomBook.getBookname()) && recommendedBooks.size() < 5) {
                     RecommendBooksDto recommendBooksDto = new RecommendBooksDto();
@@ -120,7 +121,6 @@ public class OurBookService {
                 }
             }
         }
-
         return recommendedBooks;
     }
 
