@@ -19,8 +19,6 @@ public class OurBookService {
 
     private final OurBookMapper dao;
     private final Yes24Service yes24;
-    private final AladinService aladin;
-    private final YPBookService yp;
 
 
     //ourbook 리스트 불러오기
@@ -37,45 +35,41 @@ public class OurBookService {
         return dao.searchKeyword(keyword);
     }
 
-    //추천 도서 불러오기
-    public List<RecommendBooksDto> getRandomBooks() throws IOException {
-        Random random = new Random(System.currentTimeMillis());
-        int randomSite = random.nextInt(2);
-        List<RecommendBooksDto> recommendedBooks = null;
+    //베스트,에디터 추천 도서 불러오기
+    public List<RecommendBooksDto> randomBooksFromTopN(int start, int end, int pick) throws IOException {
+        List<RecommendBooksDto> recommendedBooks = new ArrayList<>();
 
-        switch (randomSite) {
-            case 0:
-                List<RankingDto> aladinTop50 = aladin.getAladinTop50();
-                if (!aladinTop50.isEmpty()) {
-                    recommendedBooks = getRecommendedBooksFromSite(aladinTop50.get(0).getBookname());
-                }
-                break;
-            case 1:
-                List<RankingDto> yes24Top50 = yes24.getYes24Top50();
-                if (!yes24Top50.isEmpty()) {
-                    recommendedBooks = getRecommendedBooksFromSite(yes24Top50.get(0).getBookname());
-                }
-                break;
-            case 2:
-                List<RankingDto> ypTop20 = yp.list();
-                if (!ypTop20.isEmpty()) {
-                    recommendedBooks = getRecommendedBooksFromSite(ypTop20.get(0).getBookname());
-                }
-                break;
-            default:
-                recommendedBooks = new ArrayList<>(); // 기본적으로 빈 리스트 반환 또는 오류 처리
-                break;
+        List<RankingDto> yes24Top50 = yes24.getYes24Top50();
+
+        if (!yes24Top50.isEmpty()) {
+
+            List<RankingDto> topNBooks = yes24Top50.subList(start, end);
+            Collections.shuffle(topNBooks);
+
+            for (int i = 0; i < Math.min(pick, topNBooks.size()); i++) {
+                RankingDto rankingDto = topNBooks.get(i);
+                RecommendBooksDto recommendBooksDto = new RecommendBooksDto();
+                String genre = dao.selectAuthor(rankingDto.getBookname());
+
+                recommendBooksDto.setImage(rankingDto.getImage());
+                recommendBooksDto.setGenre(genre);
+                recommendBooksDto.setBookname(rankingDto.getBookname());
+                recommendBooksDto.setAuthor(rankingDto.getAuthor());
+
+                recommendedBooks.add(recommendBooksDto);
+            }
         }
+
         return recommendedBooks;
     }
 
 
-    //랜덤 사이트 랭킹 1위 책관련 도서 추천 메소드
-    private List<RecommendBooksDto> getRecommendedBooksFromSite(String topBookName) {
+    //책에 관련된 추천도서
+    public List<RecommendBooksDto> recommendedBooks(String bookname) {
         List<RecommendBooksDto> recommendedBooks = new ArrayList<>();
         Set<String> addedBookNames = new HashSet<>(); // 추천책 중복을 막기위해 사용
 
-        List<OurBookDto> keywordList = dao.selectMainkeyword(topBookName);
+        List<OurBookDto> keywordList = dao.selectMainkeyword(bookname);
 
         if (keywordList != null && !keywordList.isEmpty()) {
             List<String> keywords = new ArrayList<>();
@@ -105,7 +99,7 @@ public class OurBookService {
             }
 
         } else {    //정보가 비어있을 시 그책 저자의 관련 책들 추천
-            String author = dao.selectAuthor(topBookName);
+            String author = dao.selectAuthor(bookname);
             Map<String, Object> params = new HashMap<>();
             params.put("author", author);
             List<OurBookDto> randomBooks = dao.selectCategory(params);

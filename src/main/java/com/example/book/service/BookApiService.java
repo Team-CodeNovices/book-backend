@@ -35,7 +35,7 @@ public class BookApiService {
     private int count = 0;  //횟수제한
 
     //네이버 api Data 받아서 업데이트 처리하는 메소드
-    @Scheduled(cron = "0 0/60 * * * *")     //매 시간 정각
+    @Scheduled(cron = "0 0/30 * * * *")     //매 30분마다 반복
     public void updateBooksFromApi() throws IOException {
         List<OurBookDto> nullList = dao.selectnull();
         if (!nullList.isEmpty()) {
