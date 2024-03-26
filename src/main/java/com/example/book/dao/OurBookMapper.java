@@ -46,5 +46,9 @@ public interface OurBookMapper {
 
     List<OurBookDto> publisherinfo(String publisher);
 
+    void updateAssistKeyword(List<OurBookDto> nullList);
+
+    OurBookDto selectByBookname(@Param("bookname") String bookname);
+
 
 }
