@@ -112,4 +112,20 @@
         SELECT * FROM ourBook WHERE bookname LIKE CONCAT('%', #{bookname}, '%')
     </select>
 
+    <!--  assistkeyword를 업데이트하는 SQL -->
+    <update id="updateAssistKeyword" parameterType="java.util.List">
+        <foreach collection="list" item="book" separator=";"  >
+            UPDATE ourBook
+            SET
+            mainkeyword = #{book.assistkeyword}
+            WHERE bookname = #{book.bookname}
+        </foreach>
+    </update>   
+    
+    <select id="selectBybookname" resultType="OurBookDto">
+        select *
+        from ourbook
+        where bookname = #{book.bookname}
+    </select>
+
 </mapper>
