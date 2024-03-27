@@ -1,10 +1,12 @@
 package com.example.book.service;
 
 import com.example.book.dao.OurBookMapper;
+import com.example.book.dto.OpenAIResponse;
 import com.example.book.dto.OurBookDto;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -26,16 +28,15 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 
 @Service
+@Slf4j
 public class ChatgptApiService {
 
-    private final  OurBookMapper dao;
+    private final OurBookMapper dao;
 
     @Autowired
     public ChatgptApiService(OurBookMapper dao) { // 생성자 수정
@@ -44,11 +45,12 @@ public class ChatgptApiService {
 
     private final String threadurl = "https://api.openai.com/v1/threads";
     private final String assistantId = "asst_x47fI1xzkEWib5UyiX8OQAKX";
-    private String lastThreadId = "thread_cFuoq0SwHXGQlMdLrp12CSqs"; // 쓰레드 ID를 저장할 변수
+    private String lastThreadId = "thread_QKiC1hWnfw5pG879f5tYZwy4"; // 쓰레드 ID를 저장할 변수
+
+    private int count;
 
     // 공통된 RestTemplate
     private final RestTemplate restTemplate = new RestTemplate();
-
 
 
     // 공통된 요청헤더
@@ -71,7 +73,7 @@ public class ChatgptApiService {
             return createThread(messageContent);
         } else {
             System.out.println("Thread already exists. Continuing with existing thread.");
-            return sendMessage(messageContent);
+            return sendMessage(messageContent,bookname);
         }
     }
 
@@ -127,7 +129,7 @@ public class ChatgptApiService {
         }
     }
 
-    public Map<String, Object> sendMessage(String messageContent) {
+    public Map<String, Object> sendMessage(String messageContent, String bookname) {
         try {
             // 모든 책의 상세 정보 가져오기
             List<OurBookDto> allBookDetails = dao.select();
@@ -143,17 +145,7 @@ public class ChatgptApiService {
                     // 책의 상세 정보를 메시지 content에 추가
                     messageContent += "\n\nBookdetail:\n";
                     messageContent += "Book Name: " + book.getBookname() + "\n";
-                    messageContent += "Author: " + book.getAuthor() + "\n";
-                    messageContent += "Publisher: " + book.getPublisher() + "\n";
                     messageContent += "bookdetail: " + book.getBookdetail() + "\n";
-
-                    // 이 부분에서 saveToDatabase 메소드 호출
-                    Map<String, Object> saveResult = saveToDatabase(lastThreadId);
-                    if (saveResult.get("status").equals("Success")) {
-                        System.out.println("Data saved to database successfully");
-                    } else {
-                        System.out.println("Failed to save data to database");
-                    }
 
                     String url = threadurl + "/" + lastThreadId + "/messages";
                     Map<String, Object> requestBody = new HashMap<>();
@@ -198,7 +190,7 @@ public class ChatgptApiService {
 
 
     // 메시지 응답 확인 메소드
-    public Map<String, Object> getLastMessage(String threadId) {
+    public OpenAIResponse getLastMessage() {
         String url = threadurl + "/" + lastThreadId + "/messages";
 
         HttpGet get = new HttpGet(url);
@@ -214,7 +206,6 @@ public class ChatgptApiService {
             String responseBody = new String(responseBodyBytes, StandardCharsets.UTF_8);
 
             JsonNode rootNode = objectMapper.readTree(responseBody);
-            List<Map<String, Object>> messages = new ArrayList<>();
 
             JsonNode dataListNode = rootNode.get("data");
             if (dataListNode != null && dataListNode.isArray()) {
@@ -237,63 +228,52 @@ public class ChatgptApiService {
                                 if (textNode != null && textNode.has("value")) {
                                     String value = textNode.get("value").asText();
                                     latestMessage.put("value", value);
+                                    OpenAIResponse openAIResponse = new OpenAIResponse();
+                                    openAIResponse.setText(value);
+                                    return openAIResponse; // 최신 메시지를 찾으면 즉시 반환
                                 }
                             }
                         }
                     }
                 }
-
-                if (latestMessage != null) {
-                    messages.add(latestMessage);
-                }
             }
 
-            Map<String, Object> map = new HashMap<>();
-            map.put("status", "Success");
-            map.put("messages", messages);
-
-            return map;
+            // 메시지가 없는 경우 빈 OpenAIResponse 반환
+            return new OpenAIResponse();
 
         } catch (Exception e) {
             e.printStackTrace();
-            Map<String, Object> map = new HashMap<>();
-            map.put("status", "Failed");
-            map.put("content", e.getMessage());
-            return map;
+            return null; // 예외 발생 시 null 반환
         }
     }
 
-    // 키워들 저장 메소드
-    public Map<String, Object> saveToDatabase(String threadId) {
-        // 가져온 내용을 데이터베이스에 저장하는 로직을 구현합니다.
-        // 우선 가져온 내용을 변환하여 적절한 데이터 구조로 만듭니다.
-        Map<String, Object> lastMessage = getLastMessage(threadId);
-        List<Map<String, Object>> messages = (List<Map<String, Object>>) lastMessage.get("messages");
+    public void keywordFromAssist() {
+        count = 0;
+        if (count < 1) {
+            Map<String, Object> params = new HashMap<>();
+            params.put("AssistKeywordIsNull", true);
+            List<OurBookDto> nullList = dao.selectCategory(params);
+            if (!nullList.isEmpty()) {
+                for (int i = 0; i < 3 && count < 1; i++) {
+                    OurBookDto bookDto = nullList.get(count);
+                    String bookName = bookDto.getBookname();
 
-        List<OurBookDto> bookDtoList = new ArrayList<>(); // OurBookDto 객체를 저장할 리스트 생성
+                    // OpenAI로부터 최신 메시지를 가져오기
+                    OpenAIResponse response = getLastMessage();
 
-        for (Map<String, Object> message : messages) {
-            String value = (String) message.get("value");
-            // 가져온 내용을 mainkeyword에 매핑되는 형식으로 변환합니다.
-            // 예를 들어, OurBookDto 객체를 생성하여 mainkeyword에 해당하는 필드에 value를 설정합니다.
-            OurBookDto bookDto = new OurBookDto();
-            bookDto.setAssistkeyword(value);
-
-            bookDtoList.add(bookDto); // 생성된 OurBookDto 객체를 리스트에 추가
+                    if (response != null && response.getText() != null && !response.getText().isEmpty()) {
+                        bookDto.setAssistkeyword(response.getText());
+                        dao.updateAssistKeyword(Collections.singletonList(bookDto));
+                        log.info("어시스트 키워드 " + (count + 1) + "번째 업데이트 완료");
+                    } else {
+                        log.error("OpenAI로부터 메시지를 가져오는데 실패하였습니다.");
+                    }
+                    count++;
+                }
+            }
+        } else {
+            log.info("작업 횟수 제한에 도달하여 작업을 종료합니다.");
         }
-
-        // 데이터베이스에 저장합니다.
-        try {
-            dao.updateAssistKeyword(bookDtoList); // OurBookDto 객체 리스트를 전달하여 데이터베이스에 저장
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return lastMessage;
     }
-
-
-
-
-
 
 }
