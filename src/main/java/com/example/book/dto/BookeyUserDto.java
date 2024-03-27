@@ -9,7 +9,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserDto {
+public class BookeyUserDto {
 
     private String idx;
 
