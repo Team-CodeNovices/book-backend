@@ -1,7 +1,7 @@
 package com.example.book.controller;
 
 import com.example.book.dto.LoginRequestDto;
-import com.example.book.dto.UserDto;
+import com.example.book.dto.BookeyUserDto;
 import com.example.book.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -24,7 +24,7 @@ public class UserController {
                        @RequestParam("tel") String tel,
                        @RequestParam("address") String address,
                        @RequestParam("gender") String gender) {
-        UserDto dto = UserDto.builder()
+        BookeyUserDto dto = BookeyUserDto.builder()
                 .username(username)
                 .password(password)
                 .email(email)
