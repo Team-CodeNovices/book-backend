@@ -1,5 +1,6 @@
 package com.example.book.controller;
 
+import com.example.book.dto.OpenAIResponse;
 import com.example.book.service.ChatgptApiService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -42,7 +43,10 @@ public class AssistantApiController {
             }
 
             // 해당 스레드의 가장 최근 메시지를 가져옵니다.
-            Map<String, Object> receiveResult = chatgptApiService.getLastMessage(threadId);
+            OpenAIResponse receiveResult = chatgptApiService.getLastMessage();
+
+            // 키워드를 가져옵니다.
+            chatgptApiService.keywordFromAssist();
 
             // 보낸 메시지와 함께 최근 메시지를 반환합니다.
             Map<String, Object> combinedResult = new HashMap<>();
@@ -54,8 +58,4 @@ public class AssistantApiController {
             return sendResult;
         }
     }
-
-
-
-
 }

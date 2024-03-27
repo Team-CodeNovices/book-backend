@@ -25,6 +25,9 @@
             <if test="mainKeywordIsNull">
                 AND mainkeyword IS NULL
             </if>
+        <if test="AssistKeywordIsNull">
+            AND assistkeyword IS NULL
+        </if>
         </where>
     </select>
 
@@ -117,7 +120,7 @@
         <foreach collection="list" item="book" separator=";"  >
             UPDATE ourBook
             SET
-            mainkeyword = #{book.assistkeyword}
+            assistkeyword = #{book.assistkeyword}
             WHERE bookname = #{book.bookname}
         </foreach>
     </update>   
