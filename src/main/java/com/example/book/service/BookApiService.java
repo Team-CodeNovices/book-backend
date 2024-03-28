@@ -12,6 +12,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -27,20 +29,27 @@ import java.net.URL;
 import java.util.*;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class BookApiService {
 
     private final OurBookMapper dao;
+    private final boolean isServer;
+
+    @Autowired
+    public BookApiService(OurBookMapper dao, @Value("${is.server:false}") boolean isServer) {
+        this.dao = dao;
+        this.isServer = isServer;
+    }
     private int count = 0;  //횟수제한
 
     //네이버 api Data 받아서 업데이트 처리하는 메소드
-    @Scheduled(cron = "0 0/30 * * * *")     //매 30분마다 반복
+    @Scheduled(cron = "0 0/30 * * * *") // 매 30분마다 반복
     public void updateBooksFromApi() throws IOException {
-        List<OurBookDto> nullList = dao.selectnull();
-        if (!nullList.isEmpty()) {
-            for (OurBookDto bookDto : nullList) {
-                List<OurBookDto> updatedBookDtoList = getNaverApi(bookDto.getBookname());
+        if (!isServer) {     //서버에서 일때만 스케줄러가 사용할수 있게
+            List<OurBookDto> nullList = dao.selectnull();
+            if (!nullList.isEmpty()) {
+                for (OurBookDto bookDto : nullList) {
+                    List<OurBookDto> updatedBookDtoList = getNaverApi(bookDto.getBookname());
                     for (OurBookDto updatedBookDto : updatedBookDtoList) {
                         List<OurBookDto> infoList = getNaverCrawling(updatedBookDto.getLink());
                         if (!infoList.isEmpty()) {
@@ -63,11 +72,13 @@ public class BookApiService {
                             log.info("책 정보 업데이트 완료. bookname: " + bookDto.getBookname());
                         }
                     }
-
+                }
+                log.info("업데이트 완료!!");
+            } else {
+                log.info("업데이트할 리스트가 없어 종료합니다.");
             }
-            log.info("업데이트 완료!!");
         } else {
-            log.info("업데이트할 리스트가 없어 종료합니다.");
+            log.info("서버가 아니므로 작업을 스킵합니다.");
         }
     }
 
@@ -128,26 +139,26 @@ public class BookApiService {
             for (JsonNode item : items) {
                 OurBookDto apiData = new OurBookDto();
                 String link = item.path("link").asText();
-                apiData.setLink(link != null && !link.isEmpty() ? link : "정보없음");
+                apiData.setLink(link != null && !link.isEmpty() ? link : "정보 없음");
 
                 String image = item.path("image").asText();
-                apiData.setImage(image != null && !image.isEmpty() ? image : "정보없음");
+                apiData.setImage(image != null && !image.isEmpty() ? image : "정보 없음");
 
                 String author = item.path("author").asText().replace("^", ",");
 
-                apiData.setAuthor(author != null && !author.isEmpty() ? author : "정보없음");
+                apiData.setAuthor(author != null && !author.isEmpty() ? author : "정보 없음");
 
                 String publisher = item.path("publisher").asText();
-                apiData.setPublisher(publisher != null && !publisher.isEmpty() ? publisher : "정보없음");
+                apiData.setPublisher(publisher != null && !publisher.isEmpty() ? publisher : "정보 없음");
 
                 String description = item.path("description").asText();
-                apiData.setBookdetail(description != null && !description.isEmpty() ? description : "정보없음");
+                apiData.setBookdetail(description != null && !description.isEmpty() ? description : "정보 없음");
 
                 String price = item.path("discount").asText();
-                apiData.setPrice(price != null && !price.isEmpty() ? price : "정보없음");
+                apiData.setPrice(price != null && !price.isEmpty() ? price : "정보 없음");
 
                 String pubdate = item.path("pubdate").asText();
-                apiData.setWritedate(pubdate != null && !pubdate.isEmpty() ? pubdate : "정보없음");
+                apiData.setWritedate(pubdate != null && !pubdate.isEmpty() ? pubdate : "정보 없음");
 
                 bookList.add(apiData);
             }
@@ -215,28 +226,32 @@ public class BookApiService {
     // chat api로 관련 키워드 저장하는 메소드
     @Scheduled(cron = "0 */4 * * * *") // 4분마다 작동
     public void keywordFromApi() {
-        count = 0;
-        if (count < 3) {
-            Map<String, Object> params = new HashMap<>();
-            params.put("mainKeywordIsNull", true);
-            List<OurBookDto> nullList = dao.selectCategory(params);
-            if (!nullList.isEmpty()) {
-                for (int i = 0; i < 3 && count < 3; i++) {
-                    OurBookDto bookDto = nullList.get(count);
-                    String bookName = bookDto.getBookname();
-                    OpenAIResponse response = sendOpenAIRequest(bookName);
-                    if (response != null && response.getText() != null && !response.getText().isEmpty()) {
-                        bookDto.setMainkeyword(response.getText());
-                        dao.updateMainKeyword(Collections.singletonList(bookDto));
-                        log.info("메인 키워드 " + (count + 1) + "번째 업데이트 완료");
-                    } else {
-                        log.error("OpenAI 요청 실패: bookName=" + bookName);
+        if (!isServer) {     //서버에서 일때만 스케줄러가 사용할수 있게
+            count = 0;
+            if (count < 3) {
+                Map<String, Object> params = new HashMap<>();
+                params.put("mainKeywordIsNull", true);
+                List<OurBookDto> nullList = dao.selectCategory(params);
+                if (!nullList.isEmpty()) {
+                    for (int i = 0; i < 3 && count < 3; i++) {
+                        OurBookDto bookDto = nullList.get(count);
+                        String bookName = bookDto.getBookname();
+                        OpenAIResponse response = sendOpenAIRequest(bookName);
+                        if (response != null && response.getText() != null && !response.getText().isEmpty()) {
+                            bookDto.setMainkeyword(response.getText());
+                            dao.updateMainKeyword(Collections.singletonList(bookDto));
+                            log.info("메인 키워드 " + (count + 1) + "번째 업데이트 완료");
+                        } else {
+                            log.error("OpenAI 요청 실패: bookName=" + bookName);
+                        }
+                        count++;
                     }
-                    count++;
                 }
+            } else {
+                log.info("작업 횟수 제한에 도달하여 작업을 종료합니다.");
             }
         } else {
-            log.info("작업 횟수 제한에 도달하여 작업을 종료합니다.");
+            log.info("서버가 아니므로 작업을 스킵합니다.");
         }
     }
 
