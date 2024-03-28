@@ -42,7 +42,7 @@ public class ChatgptApiService {
     private final boolean isServer;
 
     @Autowired
-    public ChatgptApiService(OurBookMapper dao,@Value("${is.server:false}") boolean isServer) { // 생성자 수정
+    public ChatgptApiService(OurBookMapper dao, @Value("${is.server:false}") boolean isServer) { // 생성자 수정
         this.dao = dao;
         this.isServer = isServer;
     }
@@ -155,38 +155,41 @@ public class ChatgptApiService {
     // 키워드 업데이트
     @Scheduled(cron = "0 */2 * * * *")
     public void updateAssistKeywords() {
-        int count = 0;
-        List<OurBookDto> books = dao.assistnull();
-        if (books.isEmpty()) {
-            log.info("No books found with null assist keyword.");
-            return;
-        }
-
-        for (OurBookDto book : books) {
-            if (count >= 1) {
-                log.info("Reached the limit of 1 updates.");
-                break;
+        if (!isServer) {
+            // 서버 환경에서는 스케줄러를 동작시킵니다.
+            int count = 0;
+            List<OurBookDto> books = dao.assistnull();
+            if (books.isEmpty()) {
+                log.info("No books found with null assist keyword.");
+                return;
             }
 
-            try {
-                sendMessage(book.getBookname(),book.getBookdetail());
-                Thread.sleep(10000);
-                OpenAIResponse response = getLastMessage();
-                if (response != null && response.getText() != null && !response.getText().isEmpty()) {
-                    book.setAssistkeyword(response.getText());
-                    dao.updateAssistKeyword(Collections.singletonList(book));
-                    log.info("Updated assist keyword for book: {}", book.getBookname());
-                    count++;
-                } else {
-                    log.error("Failed to retrieve message from OpenAI.");
+            for (OurBookDto book : books) {
+                if (count >= 1) {
+                    log.info("Reached the limit of 1 updates.");
+                    break;
                 }
-            } catch (Exception e) {
-                log.error("Exception occurred while updating assist keyword: {}", e.getMessage());
-            }  if (isServer) {
-                log.info("Running on server.");
-            } else {
-                log.info("Running on local environment.");
+
+                try {
+                    sendMessage(book.getBookname(), book.getBookdetail());
+                    Thread.sleep(10000);
+                    OpenAIResponse response = getLastMessage();
+                    if (response != null && response.getText() != null && !response.getText().isEmpty()) {
+                        book.setAssistkeyword(response.getText());
+                        dao.updateAssistKeyword(Collections.singletonList(book));
+                        log.info("Updated assist keyword for book: {}", book.getBookname());
+                        count++;
+                    } else {
+                        log.error("Failed to retrieve message from OpenAI.");
+                    }
+                } catch (Exception e) {
+                    log.error("Exception occurred while updating assist keyword: {}", e.getMessage());
+                }
             }
+        } else {
+            // 로컬 환경에서는 스케줄러를 비활성화합니다.
+            log.info("Scheduler is disabled in local environment.");
+            return;
         }
     }
 }
