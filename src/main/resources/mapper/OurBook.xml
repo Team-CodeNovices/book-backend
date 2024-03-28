@@ -96,19 +96,22 @@
         </foreach>
     </update>
 
-    <select id="searchKeyword" resultType="OurBookDto">
-        SELECT * FROM ourBook WHERE bookdetail LIKE CONCAT('%', #{keyword}, '%')
-                                 OR genre LIKE CONCAT('%', #{keyword}, '%')
-                                 OR bookname LIKE CONCAT('%', #{keyword}, '%')
+    <select id="searchByAuthor" resultType="OurBookDto">
+        SELECT * FROM ourBook
+        WHERE author LIKE CONCAT('%', #{author}, '%')
     </select>
 
-    <select id="authorinfo" resultType="OurBookDto">
-        select * from ourBook where author LIKE CONCAT('%', #{author},'%')
-                                 OR publisher LIKE CONCAT('%',#{publisher},'%')
+    <select id="searchByPublisher" resultType="OurBookDto">
+        SELECT * FROM ourBook
+        WHERE publisher LIKE CONCAT('%', #{publisher}, '%')
     </select>
 
-    <select id="publisherinfo" resultType="OurBookDto">
-        select * from ourBook where publisher LIKE CONCAT('%',#{publisher},'%')
+    <select id="searchKeyword" resultType="OurBookDto" parameterType="String">
+        SELECT * FROM ourBook
+        WHERE
+            bookdetail LIKE CONCAT('%', #{keyword}, '%')
+           OR genre LIKE CONCAT('%', #{keyword}, '%')
+           OR bookname LIKE CONCAT('%', #{keyword}, '%')
     </select>
 
     <select id="bookdetailinfo" resultType="OurBookDto">

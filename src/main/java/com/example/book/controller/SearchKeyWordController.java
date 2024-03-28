@@ -1,4 +1,4 @@
-/*
+
 package com.example.book.controller;
 
 import com.example.book.dto.OurBookDto;
@@ -18,30 +18,39 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@Api(tags = {"키워드 검색 API"})
+@Api(tags = {"검색 API"})
 @RequiredArgsConstructor
 @RequestMapping("/search")
 public class SearchKeyWordController {
 
     private final SearchService book;
+    private final OurBookService books;
     @GetMapping("/keyword")
     @ApiOperation(value = "키워드 검색")
-
-    public ResponseEntity<List<OurBookDto>> searchBooks(
-            @RequestParam String searchType,
-            @RequestParam String keyword
-
-    ) {
+    public ResponseEntity<List<OurBookDto>> searchByKeyword(@RequestParam String keyword) throws IOException {
         try {
-            List<OurBookDto> result = book.searchBooks(searchType, keyword);
+            List<OurBookDto> result = books.searchByKeyword(keyword);
             if (result.isEmpty()) {
                 return ResponseEntity.noContent().build(); // 검색 결과가 없을 때
             }
             return ResponseEntity.ok(result); // 검색 결과를 반환
-        } catch (Exception e) {
+        } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 서버 오류 발생 시
         }
     }
 
+    @GetMapping("/author")
+    @ApiOperation(value = "작가 검색")
+    public ResponseEntity<List<OurBookDto>> searchByAuthor(@RequestParam String author) {
+        List<OurBookDto> books =book.searchByAuthor(author);
+        return ResponseEntity.ok(books);
+    }
+    @GetMapping("/publisher")
+    @ApiOperation(value = "출판사 검색")
+    public ResponseEntity<List<OurBookDto>> searchByPublisher(@RequestParam String publisher){
+        List<OurBookDto> books =book.searchByPublisher(publisher);
+        return ResponseEntity.ok(books);
+    }
 }
-*/
+
+

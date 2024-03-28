@@ -5,7 +5,7 @@
 <mapper namespace="com.example.book.dao.UserMapper">
 
     <!-- 회원 가입 -->
-    <insert id="signUp" parameterType="UserDto">
+    <insert id="signUp" parameterType="BookeyUserDto">
         insert into user(username,password,email,tel,address,gender)
         values(#{username}, #{password}, #{email},#{tel},#{address},#{gender})
     </insert>
