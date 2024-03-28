@@ -123,12 +123,14 @@
             assistkeyword = #{book.assistkeyword}
             WHERE bookname = #{book.bookname}
         </foreach>
-    </update>   
-    
-    <select id="selectBybookname" resultType="OurBookDto">
+    </update>
+
+    <select id="assistnull" resultType="OurBookDto">
         select *
         from ourbook
-        where bookname = #{book.bookname}
+        where
+           (bookdetail != '정보없음' and bookdetail IS NOT NULL and bookdetail != '정보 없음')
+            and (assistkeyword is null)
     </select>
 
 </mapper>
