@@ -11,5 +11,5 @@ public interface UserMapper {
     void signUp(BookeyUserDto dto);
 
     //로그인
-    String login(LoginRequestDto dto);
+    int login(LoginRequestDto dto);
 }

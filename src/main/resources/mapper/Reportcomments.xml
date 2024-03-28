@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.book.dao.ReportcommentsMapper">
+
+    <insert id="commentsinsert" parameterType="ReportcommentsDto">
+        insert into reportcomments(commentsidx,postidx,useridx,content,writedate)
+        values(#{commentsidx}, #{postidx}, #{useridx}, #{content}, #{writedate})
+    </insert>
+
+    <update id="updatecomments" parameterType="ReportcommentsDto">
+        update reportcomments
+        <set>
+            <if test="content != null">content = #{content},</if>
+            <if test="writedate != null">writedate = #{writedate}</if>
+        </set>
+        where commentsidx = #{commentsidx}
+    </update>
+
+    <delete id="deleteComments" parameterType="int">
+        delete from reportcomments
+        where commentsidx = #{commentsidx}
+    </delete>
+
+
+</mapper>

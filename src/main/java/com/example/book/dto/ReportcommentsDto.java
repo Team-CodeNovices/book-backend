@@ -13,9 +13,9 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReportcommentsDto {
-    private int commentsidx;
-    private int postidx;
-    private int useridx;
-    private String content;
-    private Date writedate;
+    private int commentsidx;        //댓글 번호
+    private int postidx;            //게시글 번호
+    private int useridx;            //유저 번호
+    private String content;         //댓글
+    private Date writedate;         //작성일시
 }
