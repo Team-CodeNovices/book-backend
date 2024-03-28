@@ -16,6 +16,8 @@ public class BookeyUserDto {
     @Pattern(regexp = "^[a-zA-Z가-힣]{2,}$",message = "이름: 영대소문자와 한글만 가능 2글자 이상으로 하세요.")
     private String username;
 
+    private String nickname;
+
     @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[`~!@#$%^&*()-_=+]).{8,24}$"
             ,message = "패스워드: 영문자,기호,숫자를 반드시 1개 포함하여 8~24 글자로 하세요.")
     private String password;

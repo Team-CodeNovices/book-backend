@@ -20,9 +20,8 @@ public class UserService {
     }
 
     //로그인
-    public String login(LoginRequestDto dto) {
-        String id = dao.login(dto);
-        log.info(id);
+    public int login(LoginRequestDto dto) {
+        int id = dao.login(dto);
         return id;
     }
 

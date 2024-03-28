@@ -13,12 +13,13 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookReportDto {
-    private int postidx;
-    private int useridx;
-    private String postimage;
-    private String bookname;
-    private String postcontents;
-    private Date writedate;
-    private int userlike;
+    private int postidx;            //게시글 번호
+    private int useridx;            //유저 번호
+    private String reporttitle;     //게시글 제목
+    private String postimage;       //책이미지
+    private String bookname;        //책이름
+    private String postcontents;    //작성글
+    private Date writedate;         //작성일시
+    private int userlike;           //좋아요
 
 }

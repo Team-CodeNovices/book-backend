@@ -8,6 +8,8 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
+
 @RestController
 @Api(tags = {"User 정보를 제공하는 Controller"})
 @RequiredArgsConstructor
@@ -37,9 +39,15 @@ public class UserController {
 
     @GetMapping("/login")
     @ApiOperation(value = "로그인")
-    public String login(@RequestParam String email, @RequestParam String password) {
+    public int login(@RequestParam String email, @RequestParam String password, HttpSession session) {
         LoginRequestDto dto = new LoginRequestDto(email,password);
-        return service.login(dto);
+        int idx = service.login(dto);
+
+        if (idx != -1) {
+            session.setAttribute("userIdx", idx);
+        }
+
+        return idx;
     }
 
 
