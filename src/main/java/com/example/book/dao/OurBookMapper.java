@@ -39,12 +39,12 @@ public interface OurBookMapper {
 
     //키워드 검색
     List<OurBookDto> searchKeyword(@Param("keyword") String keyword);
-
+    //책 상세내용
     List<OurBookDto> bookdetailinfo(String bookname);
-
-    List<OurBookDto> authorinfo(String author);
-
-    List<OurBookDto> publisherinfo(String publisher);
+    //출판사 검색
+    List<OurBookDto> searchByPublisher(@Param("publisher")String publisher);
+    //작가 검색
+    List<OurBookDto> searchByAuthor(@Param("author")String author);
 
     void updateAssistKeyword(List<OurBookDto> nullList);
 
