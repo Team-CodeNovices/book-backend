@@ -48,7 +48,6 @@ public interface OurBookMapper {
 
     void updateAssistKeyword(List<OurBookDto> nullList);
 
-    OurBookDto selectByBookname(@Param("bookname") String bookname);
-
+    List<OurBookDto> assistnull();
 
 }
