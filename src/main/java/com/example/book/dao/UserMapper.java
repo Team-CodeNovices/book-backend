@@ -12,4 +12,9 @@ public interface UserMapper {
 
     //로그인
     int login(LoginRequestDto dto);
+
+    //내정보 보기
+    BookeyUserDto userInfoById(int idx);
+    //내정보 수정
+    void updateInfo(int idx,BookeyUserDto dto);
 }

@@ -13,11 +13,30 @@
     <!-- 로그인 -->
     <select id="login" parameterType="LoginRequestDto" resultType="int">
         SELECT idx
-
         FROM bookeyuser
         WHERE email =#{email} AND password = #{password}
     </select>
 
+    <!--유저 정보보기-->
+    <select id = "userInfoById" resultType="BookeyUserDto">
+        SELECT *
+        FROM bookeyuser
+        WHERE idx=#{idx}
+    </select>
+
+    <!--유저 정보 수정-->
+    <update id="updateInfo" >
+        UPDATE bookeyuser
+        SET
+            username = #{username},
+            nickname = #{nickname},
+            password = #{password},
+            email = #{email},
+            tel = #{tel},
+            address = #{address},
+            gender = #{gender}
+        WHERE idx = #{idx}
+    </update>
 
 
 </mapper>
