@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class JWTTokenDto {
+public class JWTokenDto {
     private String grantType;
     private String accessToken;
     private String refreshToken;

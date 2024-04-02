@@ -1,6 +1,6 @@
 package com.example.book.service;
 
-import com.example.book.dto.JWTTokenDto;
+import com.example.book.dto.JWTokenDto;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,14 +21,14 @@ public class JwtTokenService {
     private String secretKey;
 
     // 유저 정보를 가지고 AccessToken, RefreshToken을 생성하는 메서드
-    public JWTTokenDto generateToken(int idx) {
+    public JWTokenDto generateToken(int idx) {
         // 새로운 Access Token 생성
         String accessToken = generateAccessToken(idx);
 
         // Refresh Token 생성
         String refreshToken = generateRefreshToken(idx);
 
-        return JWTTokenDto.builder()
+        return JWTokenDto.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
@@ -64,38 +64,11 @@ public class JwtTokenService {
         return Integer.parseInt(claims.getSubject());
     }
 
-
-
-    public JWTTokenDto generateNewAccessToken(String refreshToken) {
-        try {
-            // Refresh 토큰을 파싱하여 유효성 검증
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(secretKey)
-                    .build()
-                    .parseClaimsJws(refreshToken)
-                    .getBody();
-
-            // Refresh 토큰에서 사용자 ID 가져오기
-            int userIdx = Integer.parseInt(claims.get("useridx", String.class));
-
-            // 새로운 Access Token 생성
-            String newAccessToken = generateAccessToken(userIdx);
-
-            return JWTTokenDto.builder()
-                    .accessToken(newAccessToken)
-                    .build();
-        } catch (JwtException e) {
-            // Refresh 토큰이 유효하지 않은 경우
-            log.error("Refresh 토큰이 유효하지 않습니다.", e);
-            throw new RuntimeException("Refresh 토큰이 유효하지 않습니다.");
-        }
-    }
-
     //access 토큰 발행하는 메소드
     private String generateAccessToken(int userIdx) {
         long nowMillis = System.currentTimeMillis();
 
-        // Access Token 만료 시간 설정 (예: 1시간)
+        // Access Token 만료 시간 설정 (1시간)
         long accessTokenExpirationMillis = nowMillis + 3600000; // 1시간 (1시간 = 3600000밀리초)
         Date accessTokenExpiration = new Date(accessTokenExpirationMillis);
 
@@ -113,7 +86,7 @@ public class JwtTokenService {
     private String generateRefreshToken(int userIdx) {
         long nowMillis = System.currentTimeMillis();
 
-        // Refresh Token 만료 시간 설정 (예: 7일)
+        // Refresh Token 만료 시간 설정 (7일)
         long refreshTokenExpirationMillis = nowMillis + 7 * 24 * 3600000; // 7일 (1주일 = 7 * 24시간 * 3600000밀리초)
         Date refreshTokenExpiration = new Date(refreshTokenExpirationMillis);
 
@@ -127,6 +100,31 @@ public class JwtTokenService {
         return refreshToken;
     }
 
+    //access 토큰 만료시 refresh 토큰으로 재발급 받는 메소드(아직 사용 x)
+    public JWTokenDto generateNewAccessToken(String refreshToken) {
+        try {
+            // Refresh 토큰을 파싱하여 유효성 검증
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(secretKey)
+                    .build()
+                    .parseClaimsJws(refreshToken)
+                    .getBody();
+
+            // Refresh 토큰에서 사용자 ID 가져오기
+            int userIdx = Integer.parseInt(claims.get("useridx", String.class));
+
+            // 새로운 Access Token 생성
+            String newAccessToken = generateAccessToken(userIdx);
+
+            return JWTokenDto.builder()
+                    .accessToken(newAccessToken)
+                    .build();
+        } catch (JwtException e) {
+            // Refresh 토큰이 유효하지 않은 경우
+            log.error("Refresh 토큰이 유효하지 않습니다.", e);
+            throw new RuntimeException("Refresh 토큰이 유효하지 않습니다.");
+        }
+    }
     
 
 }
