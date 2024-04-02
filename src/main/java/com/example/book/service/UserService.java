@@ -32,8 +32,8 @@ public class UserService {
     }
 
     //내정보 수정
-    public void userInfoUpdate(int idx,BookeyUserDto dto) {
-        dao.updateInfo(idx,dto);
+    public void userInfoUpdate(BookeyUserDto dto) {
+        dao.updateInfo(dto);
     }
     
     //이후에 인증이 필요한 메소드는 이렇게 사용하라고 남겨놓은겁니다.

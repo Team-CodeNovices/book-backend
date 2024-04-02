@@ -16,5 +16,5 @@ public interface UserMapper {
     //내정보 보기
     BookeyUserDto userInfoById(int idx);
     //내정보 수정
-    void updateInfo(int idx,BookeyUserDto dto);
+    void updateInfo(BookeyUserDto dto);
 }
