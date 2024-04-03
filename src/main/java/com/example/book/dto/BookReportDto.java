@@ -21,5 +21,6 @@ public class BookReportDto {
     private String postcontents;    //작성글
     private Date writedate;         //작성일시
     private int userlike;           //좋아요
+    private int commentscount;      // 댓글 갯수
 
 }
