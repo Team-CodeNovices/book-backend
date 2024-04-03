@@ -21,9 +21,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll() // 스웨거 관련 URL은 인증 없이 접근 허용
-                .antMatchers("/user/login", "/user/signup").permitAll() // 다른 인증이 필요 없는 URL 허용
-                .anyRequest().authenticated() // 나머지 요청은 모두 인증이 필요함
+                .antMatchers("/user/userinfo", "/user/userupdate").authenticated()  //인증이 필요한 요청
+                .anyRequest().permitAll() // 나머지 요청은 모두 인증없이 가능
                 .and()
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class); // JWT 인증 필터를 추가하여 보안 필터 체인에 적용
     }
