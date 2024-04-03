@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RequiredArgsConstructor
 @RequestMapping("/reportcomment")
@@ -34,4 +36,7 @@ public class ReportcommentController {
         service.commentdelete(commentidx);
     }
 
+    @GetMapping("/commentslist")
+    @ApiOperation(value = "댓글 리스트")
+    public List<ReportcommentsDto> commentslist(@RequestParam int postidx) {return service.reportcommentlist(postidx);}
 }
