@@ -27,6 +27,15 @@
                               where postidx = #{postidx}
     </update>
 
+    <!--좋아요 등록-->
+    <insert id="liketrue" parameterType="ReportLikeDto">
+        insert into reportlike(like_status,user_id,post_id)
+        values (1,#{user_id},#{post_id})
+    </insert>
+
+    <insert id="likefalse" parameterType="ReportLikeDto">
+        delete FROM reportlike where user_id = #{user_id} and post_id = #{post_id}
+    </insert>
 
 
 </mapper>

@@ -2,6 +2,7 @@ package com.example.book.service;
 
 import com.example.book.dao.BookReportMapper;
 import com.example.book.dto.BookReportDto;
+import com.example.book.dto.ReportLikeDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,11 +26,18 @@ public class BookReportService {
         return dao.reportselect(dto);
 
     }
-    public int  reportupdate(BookReportDto dto){
+    public int  reportupdate(BookReportDto dto,int userIdx){
         return dao.reportupdate(dto);
     }
 
     public void reportdelete(BookReportDto dto){
         dao.reportdelete(dto);
+    }
+
+    public void liketrue(ReportLikeDto dto){
+        dao.liketrue(dto);
+    }
+    public void likefalse(ReportLikeDto dto){
+        dao.likefalse(dto);
     }
 }

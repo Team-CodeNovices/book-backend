@@ -1,6 +1,7 @@
 package com.example.book.dao;
 
 import com.example.book.dto.BookReportDto;
+import com.example.book.dto.ReportLikeDto;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -20,4 +21,8 @@ public interface BookReportMapper {
     int reportupdate(BookReportDto dto);
     //게시물 삭제
     void reportdelete(BookReportDto dto);
+
+    void liketrue(ReportLikeDto dto);
+
+    void likefalse(ReportLikeDto dto);
 }
