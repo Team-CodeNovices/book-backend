@@ -1,11 +1,19 @@
 package com.example.book.service;
 
 import com.example.book.dao.UserMapper;
+import com.example.book.dto.BookReportDto;
+import com.example.book.dto.HeartsDto;
 import com.example.book.dto.LoginRequestDto;
 import com.example.book.dto.BookeyUserDto;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -13,7 +21,6 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserMapper dao;
-    private final JwtTokenService jwtService;
 
     //회원 가입
     public void signUp(BookeyUserDto dto) {
@@ -35,19 +42,39 @@ public class UserService {
     public void userInfoUpdate(BookeyUserDto dto) {
         dao.updateInfo(dto);
     }
-    
-    //이후에 인증이 필요한 메소드는 이렇게 사용하라고 남겨놓은겁니다.
-    public void jwtProvideExample(String token) {
-        // 토큰 검증하기
-        if(jwtService.validateToken(token)) {
-            // 토큰이 유효한 경우
-            int userId = jwtService.getUserIdFromToken(token);
-            // 여기서 userId를 사용하여 사용자 정보를 수정
-//            userService.updateUserInfo(userId, newUserInfo);
-        } else {
-            // 토큰이 유효하지 않은 경우 처리
-            throw new RuntimeException("유효하지 않은 토큰입니다.");
-        }
+
+
+    //찜 등록
+    public void heartTrue(HeartsDto heart) {
+        dao.heartTrue(heart);
+        dao.updateHeartCount(heart.getBookidx());
+    }
+
+    //찜 취소
+    public void heartFalse(HeartsDto heart) {
+        dao.heartFalse(heart);
+        dao.updateHeartCount(heart.getBookidx());
+
+    }
+
+    //찜 status 상태 업데이트
+    public void updateHeartStatus(HeartsDto heart) {
+        dao.updateHeartStatus(heart);
+    }
+
+    //유저가 찜한 책 리스트
+    public List<Map<String, Object>> heartsList(int useridx) {
+        return dao.heartsList(useridx);
+    }
+
+    //유저가 쓴 독후감 리스트    
+    public List<BookReportDto> userReport(int useridx) {
+        return dao.userReportList(useridx);
+    }
+
+    //좋아요 상태
+    public String getHeartStatus(int useridx, int bookidx) {
+        return dao.heartStatus(useridx, bookidx);
     }
 
 }

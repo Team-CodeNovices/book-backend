@@ -11,7 +11,7 @@ import java.util.Date;
 @Builder
 public class BookeyUserDto {
 
-    private int idx;
+    private int useridx;
 
     @Pattern(regexp = "^[a-zA-Z가-힣]{2,}$",message = "이름: 영대소문자와 한글만 가능 2글자 이상으로 하세요.")
     private String username;
