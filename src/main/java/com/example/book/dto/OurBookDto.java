@@ -15,6 +15,8 @@ import java.sql.Date;
 @Builder(builderMethodName = "ourBookDtoBuilder")
 public class OurBookDto {
 
+    private int idx;                    //책 번호
+    private int hearts;                 //찜 개수
     private String link;                //책 링크
     private String image;               //이미지 링크
     private String bookname;            //책이름
