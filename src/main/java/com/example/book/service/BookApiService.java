@@ -45,7 +45,7 @@ public class BookApiService {
     //네이버 api Data 받아서 업데이트 처리하는 메소드
     @Scheduled(cron = "0 0/30 * * * *") // 매 30분마다 반복
     public void updateBooksFromApi() throws IOException {
-        if (!isServer) {     //서버에서 일때만 스케줄러가 사용할수 있게
+//        if (!isServer) {     //서버에서 일때만 스케줄러가 사용할수 있게
             List<OurBookDto> nullList = dao.selectnull();
             if (!nullList.isEmpty()) {
                 for (OurBookDto bookDto : nullList) {
@@ -77,9 +77,9 @@ public class BookApiService {
             } else {
                 log.info("업데이트할 리스트가 없어 종료합니다.");
             }
-        } else {
-            log.info("서버가 아니므로 작업을 스킵합니다.");
-        }
+//        } else {
+//            log.info("서버가 아니므로 작업을 스킵합니다.");
+//        }
     }
 
 
@@ -181,7 +181,7 @@ public class BookApiService {
     // OpenAI 요청을 보내는 메소드
     public OpenAIResponse sendOpenAIRequest(String bookName) {
         String OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
-        String OPENAI_API_KEY = "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";
+        String OPENAI_API_KEY = "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";
 
         RestTemplate restTemplate = new RestTemplate();
 
@@ -224,9 +224,9 @@ public class BookApiService {
     }
 
     // chat api로 관련 키워드 저장하는 메소드
-    @Scheduled(cron = "0 */4 * * * *") // 4분마다 작동
+    @Scheduled(cron = "0 */5 * * * *") // 5분마다 작동
     public void keywordFromApi() {
-        if (!isServer) {     //서버에서 일때만 스케줄러가 사용할수 있게
+//        if (!isServer) {     //서버에서 일때만 스케줄러가 사용할수 있게
             count = 0;
             if (count < 3) {
                 Map<String, Object> params = new HashMap<>();
@@ -250,9 +250,9 @@ public class BookApiService {
             } else {
                 log.info("작업 횟수 제한에 도달하여 작업을 종료합니다.");
             }
-        } else {
-            log.info("서버가 아니므로 작업을 스킵합니다.");
-        }
+//        } else {
+//            log.info("서버가 아니므로 작업을 스킵합니다.");
+//        }
     }
 
     //이전 알라딘 api(사용x)

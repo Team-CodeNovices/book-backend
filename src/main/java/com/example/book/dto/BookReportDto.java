@@ -22,6 +22,7 @@ public class BookReportDto {
     private Date writedate;        //작성일시
     private int userlike;           //좋아요 갯수
     private int commentscount;      // 댓글 갯수
+    private int likecount;
 
 
 }

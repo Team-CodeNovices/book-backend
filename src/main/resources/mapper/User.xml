@@ -12,7 +12,7 @@
 
     <!-- 로그인 -->
     <select id="login" parameterType="LoginRequestDto" resultType="int">
-        SELECT idx
+        SELECT useridx
         FROM bookeyuser
         WHERE email =#{email} AND password = #{password}
     </select>
@@ -21,7 +21,7 @@
     <select id = "userInfoById" resultType="BookeyUserDto">
         SELECT *
         FROM bookeyuser
-        WHERE idx=#{idx}
+        WHERE useridx=#{useridx}
     </select>
 
     <!--유저 정보 수정-->
@@ -35,8 +35,62 @@
             tel = #{tel},
             address = #{address},
             gender = #{gender}
-        WHERE idx = #{idx}
+        WHERE useridx = #{useridx}
     </update>
+
+    <!-- 좋아요 등록 -->
+    <insert id="heartTrue" parameterType="HeartsDto">
+        INSERT INTO hearts(user_idx,book_idx,status)
+        VALUES (#{useridx},#{bookidx},#{status})
+    </insert>
+
+    <!-- 좋아요 취소 -->
+    <update id="heartFalse" parameterType="HeartsDto">
+        UPDATE hearts
+        SET status = 'unliked'
+        WHERE user_idx = #{useridx} AND book_idx = #{bookidx}
+    </update>
+
+    <!--하트상태 업데이트-->
+    <update id="updateHeartStatus" parameterType="HeartsDto">
+        UPDATE hearts
+        SET status = #{status}
+        WHERE user_idx = #{useridx} AND book_idx = #{bookidx}
+    </update>
+
+    <!-- 좋아요 갯수 업데이트 -->
+    <update id="updateHeartCount" parameterType="int">
+        UPDATE ourBook SET hearts =
+                                   (SELECT count(*) FROM hearts WHERE book_idx = #{bookidx} AND status = 'liked')
+        WHERE bookidx = #{bookidx}
+    </update>
+
+    <!--  로그인 사용자의 찜 한 책 목록-->
+    <select id="heartsList" parameterType="int" resultType="java.util.Map">
+        SELECT o.bookidx AS book_idx,
+               o.image AS image,
+               o.bookname AS bookname,
+               o.author AS author,
+               o.publisher AS publisher,
+               o.genre AS genre,
+               o.price AS price
+        FROM hearts h
+                 INNER JOIN ourbook o ON h.book_idx = o.bookidx
+        WHERE h.user_idx = #{useridx}
+    </select>
+
+    <!--로그인 사용자의 독후감-->
+    <select id="userReportList" parameterType="int" resultType="BookReportDto">
+        select * from bookreport where useridx = #{useridx}
+    </select>
+
+    <!--하트 상태-->
+    <select id="heartStatus" parameterType="int" resultType="String">
+        SELECT status
+        FROM hearts
+        WHERE user_idx = #{useridx}
+          AND book_idx = #{bookidx}
+    </select>
 
 
 </mapper>
