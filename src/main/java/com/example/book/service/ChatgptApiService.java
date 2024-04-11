@@ -42,7 +42,7 @@ public class ChatgptApiService {
     private final boolean isServer;
 
     @Autowired
-    public ChatgptApiService(OurBookMapper dao, @Value("${is.server:false}") boolean isServer) { // 생성자 수정
+    public ChatgptApiService(OurBookMapper dao, @Value("${is.server}") boolean isServer) { // 생성자 수정
         this.dao = dao;
         this.isServer = isServer;
     }
@@ -71,7 +71,7 @@ public class ChatgptApiService {
             String bookDetailMessage = "\n\nBookdetail:\n" +
                     "Book Name: " + bookname + "\n" +
                     "bookdetail: " + bookdetail + "\n" +
-                    "내가 너에게 준 bookname하고 bookdetail에서 준 정보로 키워드 5개만 뽑아줘 그리고 키워드만 보여줘"
+                    "내가 너에게 준 bookname하고 bookdetail에서 준 정보로 단어로된 키워드 5개만 뽑아줘 그리고 공백 없이 키워드만 보여줘"
                     ;
 
             HttpHeaders headers = createHeaders();
