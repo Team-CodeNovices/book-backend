@@ -45,7 +45,7 @@ public class BookApiService {
     //네이버 api Data 받아서 업데이트 처리하는 메소드
     @Scheduled(cron = "0 0/30 * * * *") // 매 30분마다 반복
     public void updateBooksFromApi() throws IOException {
-        if (!isServer) {     //서버에서 일때만 스케줄러가 사용할수 있게
+        if (isServer) {     //서버에서 일때만 스케줄러가 사용할수 있게
             List<OurBookDto> nullList = dao.selectnull();
             if (!nullList.isEmpty()) {
                 for (OurBookDto bookDto : nullList) {
@@ -226,7 +226,7 @@ public class BookApiService {
     // chat api로 관련 키워드 저장하는 메소드
     @Scheduled(cron = "0 */5 * * * *") // 5분마다 작동
     public void keywordFromApi() {
-        if (!isServer) {     //서버에서 일때만 스케줄러가 사용할수 있게
+        if (isServer) {     //서버에서 일때만 스케줄러가 사용할수 있게
             count = 0;
             if (count < 3) {
                 Map<String, Object> params = new HashMap<>();

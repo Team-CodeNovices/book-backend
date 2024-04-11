@@ -155,7 +155,7 @@ public class ChatgptApiService {
     // 키워드 업데이트
     @Scheduled(cron = "0 */2 * * * *")
     public void updateAssistKeywords() {
-        if (!isServer) {
+        if (isServer) {
             // 서버 환경에서는 스케줄러를 동작시킵니다.
             int count = 0;
             List<OurBookDto> books = dao.assistnull();
