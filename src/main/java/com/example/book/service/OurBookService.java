@@ -67,9 +67,11 @@ public class OurBookService {
     //책에 관련된 추천도서
     public List<RecommendBooksDto> recommendedBooks(String bookname) {
         List<RecommendBooksDto> recommendedBooks = new ArrayList<>();
+        log.info("제거 전 " + bookname);
         Set<String> addedBookNames = new HashSet<>(); // 추천책 중복을 막기위해 사용
-
-        List<OurBookDto> keywordList = dao.selectMainkeyword(bookname);
+        String removeBook = bookname.replaceAll("\\s+", "");
+        log.info("제거 후 " + removeBook);
+        List<OurBookDto> keywordList = dao.selectMainkeyword(removeBook);
 
         if (keywordList != null && !keywordList.isEmpty()) {
             List<String> keywords = new ArrayList<>();
@@ -85,6 +87,7 @@ public class OurBookService {
 
             for (String keyword : keywords) {
                 List<OurBookDto> booksWithKeyword = dao.containKeyword(keyword);
+                log.info("키워드 추천");
                 for (OurBookDto randomBook : booksWithKeyword) {
                     if (!addedBookNames.contains(randomBook.getBookname()) && recommendedBooks.size() < 5) {
                         RecommendBooksDto recommendBooksDto = new RecommendBooksDto();
@@ -103,6 +106,7 @@ public class OurBookService {
             Map<String, Object> params = new HashMap<>();
             params.put("author", author);
             List<OurBookDto> randomBooks = dao.selectCategory(params);
+                log.info("저자 추천" + randomBooks.toString());
             for (OurBookDto randomBook : randomBooks) {
                 if (!addedBookNames.contains(randomBook.getBookname()) && recommendedBooks.size() < 5) {
                     RecommendBooksDto recommendBooksDto = new RecommendBooksDto();
@@ -115,6 +119,7 @@ public class OurBookService {
                 }
             }
         }
+        log.info("관련 책 리스트 " + recommendedBooks);
         return recommendedBooks;
     }
 

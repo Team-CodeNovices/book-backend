@@ -21,11 +21,10 @@ public class AladinService {
 
     private final RankingWorker asyncService;
 
-    private static final String URL = "https://www.aladin.co.kr/shop/common/wbest.aspx?BranchType=1";
+    private static final String baseUrl = "https://www.aladin.co.kr/";
 
     //알라딘 크롤링 메소드
     public static List<RankingDto> getAladinData(int startP, int stopP) throws IOException {
-        String baseUrl = "https://www.aladin.co.kr/";
         List<RankingDto> list = new ArrayList<>();
         int ranking = 1;
         int totalpage = stopP;
@@ -37,7 +36,6 @@ public class AladinService {
             for (Element bookBox : bookBoxes) {
 
                 String bookTitle = bookBox.select(".bo3").text();
-//                String price = bookBox.select(".ss_p2").text().replace("원", "").trim();
                 String image = bookBox.select(".front_cover").attr("src");
 
                 Element infoElement = bookBox.selectFirst(".bo3").parent().nextElementSibling();
@@ -46,15 +44,13 @@ public class AladinService {
                 String[] parts = authorAndPublisher.split("\\|");
                 String author = parts.length > 0 ? parts[0].trim() : "";
                 String publisher = parts.length > 1 ? parts[1].trim() : "";
-                String publishDate = parts.length > 2 ? parts[2].trim() : "";
 
                 RankingDto dto = new RankingDto(
                         ranking,
                         image,
                         bookTitle,
                         author,
-                        publisher,
-                        publishDate
+                        publisher
                 );
                 list.add(dto);
                 ranking++;

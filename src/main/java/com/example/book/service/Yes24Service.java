@@ -41,10 +41,8 @@ public class Yes24Service {
                     gdName = "19세 도서";
                 }
                 String image = good.select(".lazy").attr("data-original");
-//                String price = good.select(".yes_b").text().split(" ")[0];
                 String infoAuth = good.select(".info_auth").text();
                 String infoPub = good.select(".info_pub").text();
-                String infoDate = good.select(".info_date").text();
                 String rank = good.select(".ico.rank").text();
 
                 RankingDto dto = new RankingDto(
@@ -52,8 +50,7 @@ public class Yes24Service {
                         image,
                         gdName,
                         infoAuth,
-                        infoPub,
-                        infoDate
+                        infoPub
                 );
                 list.add(dto);
             }

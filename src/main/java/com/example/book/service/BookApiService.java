@@ -33,14 +33,27 @@ import java.util.*;
 public class BookApiService {
 
     private final OurBookMapper dao;
-    private final boolean isServer;
+    @Value("${is.server}")
+    private boolean isServer;
+    @Value("${naver.id}")
+    private String NaverId;
+    @Value("${naver.secret}")
+    private String NaverSecret;
+    @Value("${chat.apikey}")
+    private String OPENAI_API_KEY;
+    private int count = 0;  //횟수제한
 
     @Autowired
-    public BookApiService(OurBookMapper dao, @Value("${is.server}") boolean isServer) {
+    public BookApiService(OurBookMapper dao, @Value("${is.server}") boolean isServer,
+                          @Value("${naver.id}") String NaverId,
+                          @Value("${naver.secret}") String NaverSecret,
+                          @Value("${chat.apikey}") String OPENAI_API_KEY) {
         this.dao = dao;
         this.isServer = isServer;
+        this.NaverId = NaverId;
+        this.NaverSecret = NaverSecret;
+        this.OPENAI_API_KEY = OPENAI_API_KEY;
     }
-    private int count = 0;  //횟수제한
 
     //네이버 api Data 받아서 업데이트 처리하는 메소드
     @Scheduled(cron = "0 0/30 * * * *") // 매 30분마다 반복
@@ -91,11 +104,9 @@ public class BookApiService {
         //장르
         Element genreElement = doc.select("[class*=bookCatalogTop_category__]").last();
         String genre = (genreElement != null && !genreElement.text().isEmpty()) ? genreElement.text() : "정보 없음";
-
         // 목차
         Element contentsElement = doc.select("[class*=infoItem_data_text__]").last();
         String contents = (contentsElement != null && !contentsElement.text().isEmpty()) ? contentsElement.text() : "정보 없음";
-
         // 저자 소개
         Element authorDetailElement = doc.select("[class*=authorIntroduction_introduce_text__]").first();
         String authorDetail = (authorDetailElement != null && !authorDetailElement.text().isEmpty()) ? authorDetailElement.text() : "정보 없음";
@@ -112,7 +123,7 @@ public class BookApiService {
     }
 
     //네이버 api 받아오는 메소드
-    public List<OurBookDto> getNaverApi(String bookName) {
+    public List<OurBookDto> getNaverApi(String bookName) throws IOException {
         // 외부 API의 엔드포인트 URL
         String apiUrl = "https://openapi.naver.com/v1/search/book.json?display=1&query=" + bookName;
 
@@ -121,8 +132,8 @@ public class BookApiService {
 
         // HTTP 요청 헤더 설정
         HttpHeaders headers = new HttpHeaders();
-        headers.set("X-Naver-Client-Id", "D1KnynlhJCHw7z4BqRcI");
-        headers.set("X-Naver-Client-Secret", "4xg4h0hmJe");
+        headers.set("X-Naver-Client-Id", NaverId);
+        headers.set("X-Naver-Client-Secret", NaverSecret);
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
         // API에 GET 요청을 보내고 JSON 형식으로 응답을 받아옴
@@ -132,47 +143,26 @@ public class BookApiService {
         // JSON 응답을 분석하여 필요한 필드 추출
         ObjectMapper objectMapper = new ObjectMapper();
         List<OurBookDto> bookList = new ArrayList<>();
-        try {
-            JsonNode root = objectMapper.readTree(jsonResponse);
-            JsonNode items = root.path("items");
+        JsonNode root = objectMapper.readTree(jsonResponse);
+        JsonNode items = root.path("items");
 
-            for (JsonNode item : items) {
-                OurBookDto apiData = new OurBookDto();
-                String link = item.path("link").asText();
-                apiData.setLink(link != null && !link.isEmpty() ? link : "정보 없음");
-
-                String image = item.path("image").asText();
-                apiData.setImage(image != null && !image.isEmpty() ? image : "정보 없음");
-
-                String author = item.path("author").asText().replace("^", ",");
-
-                apiData.setAuthor(author != null && !author.isEmpty() ? author : "정보 없음");
-
-                String publisher = item.path("publisher").asText();
-                apiData.setPublisher(publisher != null && !publisher.isEmpty() ? publisher : "정보 없음");
-
-                String description = item.path("description").asText();
-                apiData.setBookdetail(description != null && !description.isEmpty() ? description : "정보 없음");
-
-                String price = item.path("discount").asText();
-                apiData.setPrice(price != null && !price.isEmpty() ? price : "정보 없음");
-
-                String pubdate = item.path("pubdate").asText();
-                apiData.setWritedate(pubdate != null && !pubdate.isEmpty() ? pubdate : "정보 없음");
-
-                bookList.add(apiData);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        for (JsonNode item : items) {
             OurBookDto apiData = new OurBookDto();
-            apiData.setLink("파싱 실패");
-            apiData.setImage("파싱 실패");
-            apiData.setAuthor("파싱 실패");
-            apiData.setPublisher("파싱 실패");
-            apiData.setBookdetail("파싱 실패");
-            apiData.setPrice("파싱 실패");
-            apiData.setWritedate("파싱 실패");
+            String link = item.path("link").asText();
+            apiData.setLink(link != null && !link.isEmpty() ? link : "정보 없음");
+            String image = item.path("image").asText();
+            apiData.setImage(image != null && !image.isEmpty() ? image : "정보 없음");
+            String author = item.path("author").asText().replace("^", ",");
+            apiData.setAuthor(author != null && !author.isEmpty() ? author : "정보 없음");
+            String publisher = item.path("publisher").asText();
+            apiData.setPublisher(publisher != null && !publisher.isEmpty() ? publisher : "정보 없음");
+            String description = item.path("description").asText();
+            apiData.setBookdetail(description != null && !description.isEmpty() ? description : "정보 없음");
+            String price = item.path("discount").asText();
+            apiData.setPrice(price != null && !price.isEmpty() ? price : "정보 없음");
+            String pubdate = item.path("pubdate").asText();
+            apiData.setWritedate(pubdate != null && !pubdate.isEmpty() ? pubdate : "정보 없음");
+
             bookList.add(apiData);
         }
         return bookList;
@@ -181,10 +171,8 @@ public class BookApiService {
     // OpenAI 요청을 보내는 메소드
     public OpenAIResponse sendOpenAIRequest(String bookName) {
         String OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
-        String OPENAI_API_KEY = "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";
 
         RestTemplate restTemplate = new RestTemplate();
-
         // 요청 본문 생성
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("model", "gpt-3.5-turbo");
@@ -256,7 +244,7 @@ public class BookApiService {
     }
 
     //이전 알라딘 api(사용x)
-    public List<OurBookDto> getAladinApi(String bookName) {
+    public List<OurBookDto> getAladinApi(String bookName) throws IOException {
         // 외부 API의 엔드포인트 URL
         String apiUrl = "http://www.aladin.co.kr/ttb/api/ItemSearch.aspx?ttbkey=ttbamdshin1645001&QueryType=Title&MaxResults=1&SearchTarget=Book&output=js&Version=20131101&Query=" + bookName;
 
@@ -270,38 +258,24 @@ public class BookApiService {
         // JSON 응답을 분석하여 필요한 필드 추출
         ObjectMapper objectMapper = new ObjectMapper();
         List<OurBookDto> bookList = new ArrayList<>();
-        try {
-            JsonNode root = objectMapper.readTree(cleanedJsonResponse);
-            JsonNode items = root.path("item");
-            if (items.isArray()) {
-                for (JsonNode item : items) {
-                    OurBookDto apiData = new OurBookDto();
-                    apiData.setImage(item.path("cover").asText());
-                    String authorText = item.path("author").asText();
-                    String cleanedAuthor = authorText.substring(0, authorText.indexOf('(')).replaceAll("'", "").trim();
-                    apiData.setAuthor(cleanedAuthor);
-                    String categoryName = item.path("categoryName").asText();
-                    String[] categories = categoryName.split(">");
-                    String genre = categories[2];
-                    apiData.setGenre(genre);
-                    apiData.setPublisher(item.path("publisher").asText());
-                    apiData.setPrice(item.path("priceStandard").asText());
-                    apiData.setWritedate(item.path("pubDate").asText() );
-                    bookList.add(apiData);
-                }
+        JsonNode root = objectMapper.readTree(cleanedJsonResponse);
+        JsonNode items = root.path("item");
+        if (items.isArray()) {
+            for (JsonNode item : items) {
+                OurBookDto apiData = new OurBookDto();
+                apiData.setImage(item.path("cover").asText());
+                String authorText = item.path("author").asText();
+                String cleanedAuthor = authorText.substring(0, authorText.indexOf('(')).replaceAll("'", "").trim();
+                apiData.setAuthor(cleanedAuthor);
+                String categoryName = item.path("categoryName").asText();
+                String[] categories = categoryName.split(">");
+                String genre = categories[2];
+                apiData.setGenre(genre);
+                apiData.setPublisher(item.path("publisher").asText());
+                apiData.setPrice(item.path("priceStandard").asText());
+                apiData.setWritedate(item.path("pubDate").asText());
+                bookList.add(apiData);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            OurBookDto apiData = new OurBookDto();
-            apiData.setImage("파싱 실패");
-            apiData.setAuthor("파싱 실패");
-            apiData.setPublisher("파싱 실패");
-            apiData.setGenre("파싱 실패");
-            apiData.setBookdetail("파싱 실패");
-            apiData.setPrice("파싱 실패");
-            apiData.setWritedate("파싱 실패");
-            apiData.setMainkeyword("파싱 실패");
-            bookList.add(apiData);
         }
         return bookList;
     }

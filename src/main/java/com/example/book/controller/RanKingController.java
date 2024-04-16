@@ -23,7 +23,6 @@ import java.util.List;
 public class RanKingController {
 
 
-    private final OurBookService book;
     private final AladinService abook;
     private final Yes24Service yesbook;
     private final YPBookService ypbook;
@@ -49,13 +48,6 @@ public class RanKingController {
     public List<RankingDto> yplist() throws IOException {
         return ypbook.list();
     }
-
-
-//    @GetMapping("/all")
-//    public void selectList(Model model) throws IOException {
-//        List<OurBookDto> list = book.selectlist();
-//        model.addAttribute("list",list);
-//    }
 
 
 }

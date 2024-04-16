@@ -14,5 +14,4 @@ public class RankingDto {
     private String bookname;
     private String author;
     private String publisher;
-    private String writedate;
 }
