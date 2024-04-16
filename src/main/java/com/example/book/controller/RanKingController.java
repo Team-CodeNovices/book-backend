@@ -25,7 +25,7 @@ public class RanKingController {
 
     private final AladinService abook;
     private final Yes24Service yesbook;
-    private final YPBookService ypbook;
+    private final InterparkService ipbook;
 
 
     //알라딘 리스트
@@ -43,10 +43,10 @@ public class RanKingController {
     }
 
     //영풍문고 리스트
-    @GetMapping("/ypBook")
+    @GetMapping("/interpark")
     @ApiOperation(value = "yp top20위 리스트")
     public List<RankingDto> yplist() throws IOException {
-        return ypbook.list();
+        return ipbook.list();
     }
 
 
