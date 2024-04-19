@@ -30,20 +30,7 @@ public class UserController {
 
     @PostMapping("/signup")
     @ApiOperation(value = "회원가입")
-    public void signup(@RequestParam("username") String username,
-                       @RequestParam("password") String password,
-                       @RequestParam("email") String email,
-                       @RequestParam("tel") String tel,
-                       @RequestParam("address") String address,
-                       @RequestParam("gender") String gender) {
-        BookeyUserDto dto = BookeyUserDto.builder()
-                .username(username)
-                .password(password)
-                .email(email)
-                .tel(tel)
-                .address(address)
-                .gender(gender)
-                .build();
+    public void signup(@RequestBody BookeyUserDto dto) {
         service.signUp(dto);
     }
 
