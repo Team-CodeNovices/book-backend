@@ -36,7 +36,10 @@
     </select>
 
     <select id="selectAuthor" resultType="String">
-        select author from ourBook where bookname = #{bookname}
+        SELECT author
+        FROM ourBook
+        WHERE bookname = #{bookname}
+        FETCH FIRST 1 ROW ONLY
     </select>
 
     <select id="containKeyword" resultType="OurBookDto" parameterType="String">
