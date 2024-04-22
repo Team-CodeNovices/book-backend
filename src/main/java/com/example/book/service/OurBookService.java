@@ -39,7 +39,7 @@ public class OurBookService {
     public List<RecommendBooksDto> randomBooksFromTopN(int start, int end, int pick) throws IOException {
         List<RecommendBooksDto> recommendedBooks = new ArrayList<>();
 
-        List<RankingDto> yes24Top50 = yes24.getYes24Top50();
+        List<RankingDto> yes24Top50 = yes24.getYes24DataNew(1,1);
 
         if (!yes24Top50.isEmpty()) {
 

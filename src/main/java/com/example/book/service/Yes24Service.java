@@ -21,7 +21,7 @@ public class Yes24Service {
     private final RankingWorker asyncService;
 
     //예스24 크롤링 메소드
-    public static List<RankingDto> getYes24DataNew(int startP, int stopP) throws IOException {
+    public List<RankingDto> getYes24DataNew(int startP, int stopP) throws IOException {
         String baseUrl = "https://www.yes24.com/";
         List<RankingDto> list = new ArrayList<>();
         int count = 0;
