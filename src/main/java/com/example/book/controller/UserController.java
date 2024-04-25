@@ -36,9 +36,8 @@ public class UserController {
 
     @PostMapping("/login")
     @ApiOperation(value = "jwt 로그인 방식")
-    public ResponseEntity<JWTokenDto> login2(@Valid @RequestParam String email, @Valid @RequestParam String password) {
-        LoginRequestDto dto = new LoginRequestDto(email, password);
-        int idx = service.login(dto);
+    public ResponseEntity<JWTokenDto> login2(@Valid @RequestBody LoginRequestDto loginRequest) {
+        int idx = service.login(loginRequest);
 
         if (idx != -1) {
             JWTokenDto tokens = jwt.generateToken(idx);
@@ -47,6 +46,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
+
 
     @GetMapping("/userinfo")
     @ApiOperation(value = "마이페이지 정보 확인")
@@ -58,7 +58,7 @@ public class UserController {
     @PutMapping("/userupdate")
     @ApiOperation(value = "마이페이지 정보 업데이트")
     public ResponseEntity<String> updateUserInfo(Authentication authentication,
-                                                 @RequestParam BookeyUserDto dto) {
+                                                 @RequestBody BookeyUserDto dto) {
         int userIdx = Integer.parseInt(authentication.getName());
         dto.setUseridx(userIdx);
 
@@ -66,6 +66,7 @@ public class UserController {
 
         return ResponseEntity.ok("사용자 정보가 업데이트되었습니다.");
     }
+
 
     @PostMapping("/heartupdate")
     @ApiOperation(value = "찜 등록 또는 취소")
