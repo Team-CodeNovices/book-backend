@@ -29,14 +29,14 @@ public class RanKingController {
 
 
     //알라딘 리스트
-    @ApiOperation(value = "aladin top 50위 리스트")
+    @ApiOperation(value = "알라딘 top 50위 리스트")
     @GetMapping("/aladin")
     public List<RankingDto> AldinRankin() throws IOException {
         return abook.getAladinTop50();
     }
 
     //yes24 리스트
-    @ApiOperation(value = "yes24 top50위 리스트")
+    @ApiOperation(value = "예스24 top50위 리스트")
     @GetMapping("/yes24")
     public List<RankingDto> yes24Ranking() throws IOException {
         return yesbook.getYes24Top50();
@@ -44,9 +44,9 @@ public class RanKingController {
 
     //영풍문고 리스트
     @GetMapping("/interpark")
-    @ApiOperation(value = "yp top20위 리스트")
-    public List<RankingDto> yplist() throws IOException {
-        return ipbook.list();
+    @ApiOperation(value = "인터파크 top15위 리스트")
+    public List<RankingDto> ipRanking() throws IOException {
+        return ipbook.iplist();
     }
 
 

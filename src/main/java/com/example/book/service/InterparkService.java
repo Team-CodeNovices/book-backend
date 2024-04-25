@@ -19,7 +19,7 @@ import java.util.List;
 public class InterparkService {
 
     //영품문고 책정보 리스트 불러오고 이름 비교해서 OurBook테이블에 넣는 메소드
-    public List<RankingDto> list() throws IOException {
+    public List<RankingDto> iplist() throws IOException {
         List<RankingDto> list = new ArrayList<>();
 
         String baseUrl = "https://book.interpark.com";
