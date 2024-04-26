@@ -1,2 +1,69 @@
-# book-backend
-공부 겸 진행하는 토이프로젝트의 backend repo입니다.
+## 1. 프로젝트 소개
+
+<div align="center">
+Bookey는 사용자가 책 제목 또는 내용을 자세히 기억하지 못할 때도 키워드로 검색할 수 있는 독특한 독서 및 독후감 공유 플랫폼입니다. 사용자들은 SNS 형식으로 독후감을 작성하고 다른 사람들과 책에 관한 생각들을 나눌 수 있습니다.
+</div>
+
+
+
+## 1.1 프로젝트 명: BOOKEY
+
+> **🔗 배포 URL:** [BOOKEY](https://book.codenovices.store) <br />
+**🔗 테스트 계정:** bookey@test.com / 1234
+```jsx
+📕  독후감 기능 : 독서기록 서비스와 SNS가 결합된 서비스를 제공합니다.
+
+📗  키워드 검색 기능 : 내용은 알고 있지만 책의 이름이 기억이 나지 않을 경우 유사한 단어를 추적해 책을 찾아줍니다.
+
+📒  찜, 좋아요 기능 : 찜을 통해 좋아하는 책을 담을수 있고, 원하는 게시물에 '좋아요'를 누르거나 댓글을 등록할 수 있습니다.
+
+📙  도서정보 제공 : 독서기록뿐만 아니라, 출판사, 저자 등 책의 기본 정보를 볼 수 있는 기능이 있습니다.
+
+📒 추천 도서 기능 : 최신 트렌드를 따라가는 베스트셀러와 다양한 장르를 선보이는 에디터 추천 책을 소개하여 사용자들이 검색으로 소비하는 불필요한 시간을 절약할 수 있습니다. 
+```
+
+## 1.2 개발 환경
+
+### ⚙️   사용기술 
+| FrontEnd | BackEnd | Server | 협업방식 | 
+| :----: | :----: | :----: | :----: |
+| <img src="https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=React&logoColor=black"> <img src="https://img.shields.io/badge/styledcomponents-CC6699?style=flat-square&logo=styledcomponents&logoColor=white"> <img src="https://img.shields.io/badge/JavaScript-F7DF1E.svg?style=flat-square&logo=JavaScript&logoColor=black"> | <img src="https://img.shields.io/badge/REST API-000000?style=flat-square&logo=logoColor=white"> <img src="https://img.shields.io/badge/nodedotjs-green.svg?style=flat-square&logo=nodedotjs&logoColor=black"> <img src="https://img.shields.io/badge/express-red.svg?style=flat-square&logo=express&logoColor=black"> | <img src="https://img.shields.io/badge/figma-F24E1E?style=flat-square&logo=figma&logoColor=white"> | <img src="https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=GitHub&logoColor=white"> <img src="https://img.shields.io/badge/Discord-5865F2?style=flat-square&logo=Discord&logoColor=white"> | 
+
+
+# 2. 팀원 소개
+|조재근|서민희|박두환|이승준|박상현|
+|---|---|---|---|---|
+|![image]()|![image]()|![image]()|![image]()|![image]()|
+|<a href="https://github.com/M0nk2y"><img src="https://img.shields.io/badge/GitHub-181717?style=flat&logo=GitHub&logoColor=white"/></a>|<a href="https://github.com/plant0303"><img src="https://img.shields.io/badge/GitHub-181717?style=flat&logo=GitHub&logoColor=white"/></a>|<a href="https://github.com/duhwan05"><img src="https://img.shields.io/badge/GitHub-181717?style=flat&logo=GitHub&logoColor=white"/></a>|<a href="https://github.com/seung-jun2"><img src="https://img.shields.io/badge/GitHub-181717?style=flat&logo=GitHub&logoColor=white"/></a>|<a href="https://github.com/psh980121"><img src="https://img.shields.io/badge/GitHub-181717?style=flat&logo=GitHub&logoColor=white"/></a>|
+|<img src="https://img.shields.io/badge/Team member-dddddd?style=flat-square&logo=logoColor=black">|<img src="https://img.shields.io/badge/Team member-dddddd?style=flat-square&logo=logoColor=black">|<img src="https://img.shields.io/badge/Team member-dddddd?style=flat-square&logo=logoColor=black">|<img src="https://img.shields.io/badge/Team member-dddddd?style=flat-square&logo=logoColor=black">|<img src="https://img.shields.io/badge/Project Leader-000000?style=flat-square&logo=logoColor=black">
+
+## 2-1. 기능구현 및 역할 분담
+
+| <img src="https://img.shields.io/badge/담당자-ffffff?style=for-the-badge&logo=logoColor=black"> | ⚒️ 기능구현 |
+|---|---|
+| 조재근 | - 서버 |
+| 서민희 | - 프론트 |
+| 박두환 | - 백엔드 |
+| 이승준 | - 임시 |
+| 박상현 | - 임시 |
+
+
+<br />
+
+# 3. 핵심기능 시연
+
+
+
+# 4. 문제해결
+
+>1차 개발기간 동안 작성된 코드를 되돌아 보며, 작업물을 정리/분석하고 필요없는 부분을 과감하게 덜어냈습니다.
+```
+
+### 문제해결1
+
+>test1
+
+### 문제해결2
+
+>test2
+
