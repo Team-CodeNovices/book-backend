@@ -42,11 +42,11 @@ Bookey는 사용자가 책 제목 또는 내용을 자세히 기억하지 못할
 
 | <img src="https://img.shields.io/badge/담당자-ffffff?style=for-the-badge&logo=logoColor=black"> | ⚒️ 기능구현 |
 |---|---|
-| 조재근 | - 서버 |
+| 조재근 | -  |
 | 서민희 | - 프론트 |
-| 박두환 | - 백엔드 |
-| 이승준 | - 임시 |
-| 박상현 | - 임시 |
+| 박두환 | - 로그인,회원가입, 마이페이지 CRUD, yes24 랭킹 크롤링, 네이버api  |
+| 이승준 | - ChatgptAssistantapi 활용 Db 채우기<br> - S3서버 이미지 업로드 및 삭제<br> - 인터파크도서 랭킹 크롤링<br> - 독후감 댓글 CRUD  |
+| 박상현 | - 백엔드 |
 
 
 <br />
