@@ -43,8 +43,8 @@ Bookey는 사용자가 책 제목 또는 내용을 자세히 기억하지 못할
 | <img src="https://img.shields.io/badge/담당자-ffffff?style=for-the-badge&logo=logoColor=black"> | ⚒️ 기능구현 |
 |---|---|
 | 조재근 | - 서버관리 및 DB관리 |
-| 서민희 | - <a 프론트엔드 git 주소 href="https://github.com/Team-CodeNovices/book-frontend"> |
-| 박두환 | - 로그인(JWT활용)<br> - 회원가입<br> -마이페이지 CRUD<br>  - yes24 랭킹 크롤링<br> - 네이버api 및 ChatgptApi활용(데이터수집)<br> - 추천책기능(베스트셀러 및 에디터 추천)<br> - 도서 찜 기능<br> - 인증 및 권한 관리(spring security)<br> - Api 문서화기능(Swagger) <a 스웨거 href=https://book-backend.codenovices.store/swagger-ui/#/> |
+| 서민희 | - 프론트엔드 git 주소 https://github.com/Team-CodeNovices/book-frontend |
+| 박두환 | - 로그인(JWT활용)<br> - 회원가입<br> -마이페이지 CRUD<br>  - yes24 랭킹 크롤링<br> - 네이버api 및 ChatgptApi활용(데이터수집)<br> - 추천책기능(베스트셀러 및 에디터 추천)<br> - 도서 찜 기능<br> - 인증 및 권한 관리(spring security)<br> - Api 문서화기능(Swagger) https://book-backend.codenovices.store/swagger-ui/#/ |
 | 이승준 | - ChatgptAssistantapi 활용(데이터 수집)<br> - S3서버 이미지 업로드 및 삭제<br> - 인터파크도서 랭킹 크롤링<br> - 독후감 댓글 CRUD  |
 | 박상현 | - 알라딘 랭킹 크롤링<br> - 검색기능<br> - 독후감CRUD<br> - 독후감 좋아요기능<br> - 책상세페이지<br> |
 
