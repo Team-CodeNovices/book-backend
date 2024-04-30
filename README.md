@@ -36,11 +36,11 @@ Bookey는 사용자가 책 제목 또는 내용을 자세히 기억하지 못할
 |---|---|---|---|---|
 |![image]()|![image]()|![image]()|![image]()|![image]()|
 |<a href="https://github.com/M0nk2y"><img src="https://img.shields.io/badge/GitHub-181717?style=flat&logo=GitHub&logoColor=white"/></a>|<a href="https://github.com/plant0303"><img src="https://img.shields.io/badge/GitHub-181717?style=flat&logo=GitHub&logoColor=white"/></a>|<a href="https://github.com/duhwan05"><img src="https://img.shields.io/badge/GitHub-181717?style=flat&logo=GitHub&logoColor=white"/></a>|<a href="https://github.com/seung-jun2"><img src="https://img.shields.io/badge/GitHub-181717?style=flat&logo=GitHub&logoColor=white"/></a>|<a href="https://github.com/psh980121"><img src="https://img.shields.io/badge/GitHub-181717?style=flat&logo=GitHub&logoColor=white"/></a>|
-|<img src="https://img.shields.io/badge/Team member-dddddd?style=flat-square&logo=logoColor=black">|<img src="https://img.shields.io/badge/Team member-dddddd?style=flat-square&logo=logoColor=black">|<img src="https://img.shields.io/badge/Team member-dddddd?style=flat-square&logo=logoColor=black">|<img src="https://img.shields.io/badge/Team member-dddddd?style=flat-square&logo=logoColor=black">|<img src="https://img.shields.io/badge/Project Leader-000000?style=flat-square&logo=logoColor=black">
+|Server|Frontend|Backend|Backend|Backend|
 
 ## 2-1. 기능구현 및 역할 분담
 
-| <img src="https://img.shields.io/badge/담당자-ffffff?style=for-the-badge&logo=logoColor=black"> | ⚒️ 기능구현 |
+| <img src="https://img.shields.io/badge/멤버-ffffff?style=for-the-badge&logo=logoColor=black"> | ⚒️ 기능구현 |
 |---|---|
 | 조재근 | - 서버관리 및 DB관리 |
 | 서민희 | - 프론트엔드 git 주소 https://github.com/Team-CodeNovices/book-frontend |
@@ -57,8 +57,8 @@ Bookey는 사용자가 책 제목 또는 내용을 자세히 기억하지 못할
 
 # 4. 문제해결
 
->1차 개발기간 동안 작성된 코드를 되돌아 보며, 작업물을 정리/분석하고 필요없는 부분을 과감하게 덜어냈습니다.
-```
+-두환 : 저는 이러 이러한 문제가 이렇게 통해서 해결했습니다.
+-
 
 ### 네이버 api 사용
 
