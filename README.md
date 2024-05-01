@@ -191,10 +191,13 @@ Bookey는 사용자가 책 제목 또는 내용을 자세히 기억하지 못할
 이 과정에서 **@Async 어노테이션**을 활용하여 비동기 처리를 하였습니다.
 
 <details>
-<summary>비동기 저장 작업 코드1</summary>
+<summary>비동기 저장 작업 코드</summary>
 <div markdown="1">
+
+- 페이지에서 랭킹을 보여주면서 저장을 하기위해 랭킹만을 반환하는 기능과 저장하는 스레드를 나누어 비동기로 처리하였습니다.
+  ```java
+    //랭킹 반환하는 클래스
   
- ```java
     //예스24 크롤링 메소드
     public List<RankingDto> getYes24DataNew(int startP, int stopP) throws IOException {
         String baseUrl = "https://www.yes24.com/";
@@ -243,17 +246,34 @@ Bookey는 사용자가 책 제목 또는 내용을 자세히 기억하지 못할
         asyncService.getYes24Another();
         return yes24Top50;
     }
-    ```
-</div>
-</details>
+  ```
 
-<br />
-
-<details>
-<summary>비동기 저장 작업 코드2</summary>
-<div markdown="1">
-  
   ```java
+    //저장작업을 하는 클래스
+  
+        //ourbook에 없는 데이터 insert 하는 메소드(알라딘)
+    public void insertAladinData(List<RankingDto> aladin) throws IOException {
+        List<OurBookDto> existBooks = dao.select();
+        List<OurBookDto> list2 = new ArrayList<>();
+
+        for (RankingDto aladinDto : aladin) {
+
+            String finalBookNameText = aladinDto.getBookname();
+            boolean exist = existBooks.stream().anyMatch(existingBook -> existingBook.getBookname().replaceAll("\\s", "").equals(finalBookNameText.replaceAll("\\s", "")));
+            if (!exist) {
+                OurBookDto dto2 = OurBookDto.ourBookDtoBuilder().bookname(finalBookNameText).build();
+                list2.add(dto2);
+            }
+        }
+        if (!list2.isEmpty()) {
+            log.info("insert 시작 (알라딘)");
+            dao.insert(list2);
+            log.info("새로운 알라딘 책 정보를 insert 하였습니다.");
+        } else {
+            log.info("추가된 책이 없습니다.");
+        }
+    }
+
     //yes24 전체데이터 가져온 후 insert 하는 메소드(비동기)
     @Async
     public void getYes24Another() throws IOException {
@@ -307,7 +327,8 @@ Bookey는 사용자가 책 제목 또는 내용을 자세히 기억하지 못할
             log.info("추가된 책이 없습니다.");
         }
     }
-   ``` 
+  ```
+  
 </div>
 </details>
 
