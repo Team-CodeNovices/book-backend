@@ -177,10 +177,10 @@ Bookey는 사용자가 책 제목 또는 내용을 자세히 기억하지 못할
         }
         return bookList;
     }  
-
+```
 </div>
 </details>
-```
+
 <br />
 
 ## 사이트 크롤링 및 비동기적 데이터베이스 저장 작업.
@@ -243,10 +243,10 @@ Bookey는 사용자가 책 제목 또는 내용을 자세히 기억하지 못할
         asyncService.getYes24Another();
         return yes24Top50;
     }
-    
+    ```
 </div>
 </details>
-```
+
 <details>
 <summary>비동기 저장 작업 코드2</summary>
 <div markdown="1">
@@ -305,11 +305,10 @@ Bookey는 사용자가 책 제목 또는 내용을 자세히 기억하지 못할
             log.info("추가된 책이 없습니다.");
         }
     }
-    
+   ``` 
 </div>
 </details>
-```
-<br />
+
 
 ## ChatGPT 기반의 책 추천 시스템 개발
 
@@ -351,12 +350,9 @@ Bookey는 사용자가 책 제목 또는 내용을 자세히 기억하지 못할
         return recommendedBooks;
     }
 
-  
+  ```
 </div>
 </details>
-```
-<br />
-
 
 ### 이승준  
 ## 검색키워드 고도화
