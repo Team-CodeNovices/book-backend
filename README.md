@@ -64,6 +64,7 @@ Bookey는 사용자가 책 제목 또는 내용을 자세히 기억하지 못할
 <details>
 <summary>네이버 api 와 크롤링 작업 코드</summary>
 <div markdown="1">
+  
   ```java
     //네이버 api Data 받아서 업데이트 처리하는 메소드
     @Scheduled(cron = "0 0/30 * * * *") // 매 30분마다 반복
@@ -104,8 +105,7 @@ Bookey는 사용자가 책 제목 또는 내용을 자세히 기억하지 못할
             log.info("서버가 아니므로 작업을 스킵합니다.");
         }
     }
-```
-    ```java
+
     //네이버 크롤링하는 메소드
     public static List<OurBookDto> getNaverCrawling(String link) throws IOException {
         Document doc = Jsoup.connect(link).get();
@@ -131,8 +131,7 @@ Bookey는 사용자가 책 제목 또는 내용을 자세히 기억하지 못할
 
         return list;
     }
-  ```
-```java
+
     //네이버 api 받아오는 메소드
     public List<OurBookDto> getNaverApi(String bookName) throws IOException {
         // 외부 API의 엔드포인트 URL
@@ -179,9 +178,9 @@ Bookey는 사용자가 책 제목 또는 내용을 자세히 기억하지 못할
         return bookList;
     }  
 
-  ```
 </div>
 </details>
+```
 <br />
 
 ## 사이트 크롤링 및 비동기적 데이터베이스 저장 작업.
@@ -194,6 +193,7 @@ Bookey는 사용자가 책 제목 또는 내용을 자세히 기억하지 못할
 <details>
 <summary>비동기 저장 작업 코드1</summary>
 <div markdown="1">
+  
  ```java
     //예스24 크롤링 메소드
     public List<RankingDto> getYes24DataNew(int startP, int stopP) throws IOException {
@@ -243,12 +243,14 @@ Bookey는 사용자가 책 제목 또는 내용을 자세히 기억하지 못할
         asyncService.getYes24Another();
         return yes24Top50;
     }
-    ```
+    
 </div>
 </details>
+```
 <details>
 <summary>비동기 저장 작업 코드2</summary>
 <div markdown="1">
+  
   ```java
     //yes24 전체데이터 가져온 후 insert 하는 메소드(비동기)
     @Async
@@ -303,9 +305,10 @@ Bookey는 사용자가 책 제목 또는 내용을 자세히 기억하지 못할
             log.info("추가된 책이 없습니다.");
         }
     }
-    ```
+    
 </div>
 </details>
+```
 <br />
 
 ## ChatGPT 기반의 책 추천 시스템 개발
@@ -319,7 +322,9 @@ Bookey는 사용자가 책 제목 또는 내용을 자세히 기억하지 못할
 <details>
 <summary>추천 책 작업 코드</summary>
 <div markdown="1">
+  
   ```java
+
     //베스트,에디터 추천 도서 불러오기
     public List<RecommendBooksDto> randomBooksFromTopN(int start, int end, int pick) throws IOException {
         List<RecommendBooksDto> recommendedBooks = new ArrayList<>();
@@ -345,10 +350,11 @@ Bookey는 사용자가 책 제목 또는 내용을 자세히 기억하지 못할
         }
         return recommendedBooks;
     }
-```
+
   
 </div>
 </details>
+```
 <br />
 
 
