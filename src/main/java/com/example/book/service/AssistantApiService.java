@@ -5,17 +5,7 @@ import com.example.book.dto.OpenAIResponse;
 import com.example.book.dto.OurBookDto;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -23,26 +13,22 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 
 @Service
 @Slf4j
-public class ChatgptApiService {
+public class AssistantApiService {
 
     private final OurBookMapper dao;
     private final boolean isServer;
 
     @Autowired
-    public ChatgptApiService(OurBookMapper dao, @Value("${is.server}") boolean isServer) { // 생성자 수정
+    public AssistantApiService(OurBookMapper dao, @Value("${is.server}") boolean isServer) { // 생성자 수정
         this.dao = dao;
         this.isServer = isServer;
     }
@@ -153,7 +139,7 @@ public class ChatgptApiService {
     }
 
     // 키워드 업데이트
-  //  @Scheduled(cron = "0 */2 * * * *")
+    // @Scheduled(cron = "0 */2 * * * *")
     public void updateAssistKeywords() {
         if (!isServer) {
             // 서버 환경에서는 스케줄러를 동작시킵니다.
