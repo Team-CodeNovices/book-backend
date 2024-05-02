@@ -42,7 +42,7 @@ public class RanKingController {
         return yesbook.getYes24Top50();
     }
 
-    //영풍문고 리스트
+    //인터파크 리스트
     @GetMapping("/interpark")
     @ApiOperation(value = "인터파크 top15위 리스트")
     public List<RankingDto> ipRanking() throws IOException {
