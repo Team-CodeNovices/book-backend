@@ -35,7 +35,6 @@ Bookey는 사용자가 책 제목 또는 내용을 자세히 기억하지 못할
 # 2. 팀원 소개
 |조재근|서민희|박두환|이승준|박상현|
 |---|---|---|---|---|
-|![image]()|![image]()|![image]()|![image]()|![image]()|
 |<a href="https://github.com/M0nk2y"><img src="https://img.shields.io/badge/GitHub-181717?style=flat&logo=GitHub&logoColor=white"/></a>|<a href="https://github.com/plant0303"><img src="https://img.shields.io/badge/GitHub-181717?style=flat&logo=GitHub&logoColor=white"/></a>|<a href="https://github.com/duhwan05"><img src="https://img.shields.io/badge/GitHub-181717?style=flat&logo=GitHub&logoColor=white"/></a>|<a href="https://github.com/seung-jun2"><img src="https://img.shields.io/badge/GitHub-181717?style=flat&logo=GitHub&logoColor=white"/></a>|<a href="https://github.com/psh980121"><img src="https://img.shields.io/badge/GitHub-181717?style=flat&logo=GitHub&logoColor=white"/></a>|
 |Server|Frontend|Backend|Backend|Backend|
 
