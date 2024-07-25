@@ -451,3 +451,102 @@ Bookey는 사용자가 책 제목 또는 내용을 자세히 기억하지 못할
 ```
 </div>
 </details>
+</div>
+</details>
+
+<br />
+
+### 박상현  
+## 독후감 기능
+
+> 저는 독후감 기능을 담당하였습니다. 초기에 서점 느낌에 사이트로 만들려 하였으나 팀원들과 얘기 후 저희들만의 특별함이
+> 있어야 한다 판단하였고 이에 독후감 읽기 쓰기 등록 삭제의 기능들을 제작하였습니다.
+
+<details>
+<summary>AssistantApi 작업 코드</summary>
+<div markdown="1">
+
+```java
+// Assistant 메시지 보내기 및 실행하는 메소드
+    public Map<String, Object> sendMessage(String bookname, String bookdetail) {
+
+            String bookDetailMessage = "\n\nBookdetail:\n" +
+                    "Book Name: " + bookname + "\n" +
+                    "bookdetail: " + bookdetail + "\n" +
+                    "내가 너에게 준 bookname하고 bookdetail에서 준 정보로 단어로된 키워드 5개만 뽑아줘 그리고 공백 없이 키워드만 보여줘"
+                    ;
+
+            HttpHeaders headers = createHeaders();
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("role", "user");
+            requestBody.put("content", bookDetailMessage);
+
+            String messageUrl = threadurl + "/" + lastThreadId + "/messages";
+            String assistantRunUrl = threadurl + "/" + lastThreadId + "/runs";
+
+            try {
+                // 메시지 전송
+                ResponseEntity<String> messageResponseEntity = restTemplate.exchange(messageUrl, HttpMethod.POST,
+                        new HttpEntity<>(requestBody, headers), String.class);
+                String messageResponseBody = messageResponseEntity.getBody();
+
+                // Assistant 실행
+                ResponseEntity<Map> responseEntity = restTemplate.postForEntity(assistantRunUrl,
+                        new HttpEntity<>(Collections.singletonMap("assistant_id", assistantId), headers), Map.class);
+                Map<String, String> responseBody = responseEntity.getBody();
+                String runId = responseBody.get("id");
+                System.out.println("Assistant run started successfully for thread ID: " + lastThreadId);
+                System.out.println("Run ID: " + runId);
+
+                return Map.of("status", "Success", "responseBody", messageResponseBody);
+            } catch (HttpClientErrorException e) {
+                return Map.of("status", "Error");
+            } catch (Exception e) {
+                log.error("Exception occurred: {}", e.getMessage());
+                return Map.of("status", "Error");
+            }
+        }
+
+ // 키워드 업데이트
+    // @Scheduled(cron = "0 */2 * * * *")
+    public void updateAssistKeywords() {
+        if (!isServer) {
+            // 서버 환경에서는 스케줄러를 동작시킵니다.
+            int count = 0;
+            List<OurBookDto> books = dao.assistnull();
+            if (books.isEmpty()) {
+                log.info("No books found with null assist keyword.");
+                return;
+            }
+
+            for (OurBookDto book : books) {
+                if (count >= 1) {
+                    log.info("Reached the limit of 1 updates.");
+                    break;
+                }
+
+                try {
+                    sendMessage(book.getBookname(), book.getBookdetail());
+                    Thread.sleep(10000);
+                    OpenAIResponse response = getLastMessage();
+                    if (response != null && response.getText() != null && !response.getText().isEmpty()) {
+                        book.setAssistkeyword(response.getText());
+                        dao.updateAssistKeyword(Collections.singletonList(book));
+                        log.info("Updated assist keyword for book: {}", book.getBookname());
+                        count++;
+                    } else {
+                        log.error("Failed to retrieve message from OpenAI.");
+                    }
+                } catch (Exception e) {
+                    log.error("Exception occurred while updating assist keyword: {}", e.getMessage());
+                }
+            }
+        } else {
+            // 로컬 환경에서는 스케줄러를 비활성화합니다.
+            log.info("Scheduler is disabled in local environment.");
+            return;
+        }
+    }
+```
+</div>
+</details>
